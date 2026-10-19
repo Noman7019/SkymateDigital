@@ -29073,15 +29073,23 @@ void main() {
       N = S.useRef(null),
       A = S.useRef(null),
       M = S.useRef([0, 0]),
-      I = S.useRef(0);
+      I = S.useRef(0),
+      [smdR, smdSR] = S.useState(!1);
     return (
       S.useEffect(() => {
+        let t0 = 0, t1 = 0;
+        const go = () => { t1 = (window.requestIdleCallback || ((f) => setTimeout(f, 200)))(() => smdSR(!0), { timeout: 3e3 }); },
+          ld = () => { t0 = setTimeout(go, 300); };
+        document.readyState === "complete" ? ld() : window.addEventListener("load", ld, { once: !0 });
+        return () => { (window.removeEventListener("load", ld), clearTimeout(t0), window.cancelIdleCallback && window.cancelIdleCallback(t1)); };
+      }, []),
+      S.useEffect(() => {
         const L = w.current;
-        if (!L) return;
+        if (!L || !smdR) return;
         const _ = new P7({
-          dpr: e ?? ((typeof window < "u" && window.devicePixelRatio) || 1),
+          dpr: e ?? (typeof window < "u" && window.innerWidth < 768 && !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) ? 0.5 : Math.min(window.devicePixelRatio || 1, 1)),
           alpha: !0,
-          antialias: !0,
+          antialias: !1,
         });
         A.current = _;
         const j = _.gl,
@@ -29147,11 +29155,35 @@ void main() {
             ee = (ue.height - (X.clientY - ue.top)) * re;
           ((M.current = [U, ee]), v <= 0 && (O.iMouse.value = [U, ee]));
         };
+        const smdRM = typeof matchMedia == "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+        let smdVis = !0, smdRun = !1, smdLast = -1e9, smdUntil = 0, smdSlow = 0, smdRM2 = !1;
+        const smdGo = (ms) => {
+          if (smdRM || smdRM2) return;
+          smdUntil = Math.max(smdUntil, performance.now() + ms);
+          !smdRun && smdVis && !document.hidden && ((smdRun = !0), (k.current = requestAnimationFrame(Pe)));
+        };
+        const smdIO = typeof IntersectionObserver == "function" ? new IntersectionObserver((es) => {
+          smdVis = es[es.length - 1].isIntersecting; smdVis && smdGo(0);
+        }) : null;
+        smdIO && smdIO.observe(L);
+        const smdVC = () => { document.hidden || smdGo(0); };
+        document.addEventListener("visibilitychange", smdVC);
+        const smdPM = () => smdGo(3e3);
         g && Y.addEventListener("pointermove", Ee);
+        g && Y.addEventListener("pointermove", smdPM, { passive: !0 });
         const Pe = (X) => {
+          if (((k.current = 0), !smdVis || document.hidden)) { smdRun = !1; return; }
+          if (X < smdUntil) k.current = requestAnimationFrame(Pe);
+          else if (((smdRun = !1), _.dpr < 1 && smdUntil > 0)) {
+            ((_.dpr = Math.min(window.devicePixelRatio || 1, 1)), ce());
+            try { _.render({ scene: C.current }); } catch (ue) {}
+            return;
+          }
+          if (X - smdLast < 32 && smdRun) return;
+          smdRun && smdLast > 0 && X - smdLast > 90 && ++smdSlow >= 3 && ((smdUntil = 0), (smdRM2 = !0));
+          smdLast = X;
           if (
-            ((k.current = requestAnimationFrame(Pe)),
-            (O.iTime.value = X * 0.001),
+            ((O.iTime.value = X * 0.001),
             v > 0)
           ) {
             I.current || (I.current = X);
@@ -29171,10 +29203,14 @@ void main() {
               console.error(ue);
             }
         };
+        Pe(performance.now()); (smdRun = !1), k.current && cancelAnimationFrame(k.current);
+        smdGo(8e3);
         return (
-          (k.current = requestAnimationFrame(Pe)),
           () => {
             (k.current && cancelAnimationFrame(k.current),
+              smdIO && smdIO.disconnect(),
+              document.removeEventListener("visibilitychange", smdVC),
+              g && Y.removeEventListener("pointermove", smdPM),
               g && Y.removeEventListener("pointermove", Ee),
               ae.disconnect(),
               Y.parentElement === L && L.removeChild(Y));
@@ -29191,7 +29227,7 @@ void main() {
               (A.current = null));
           }
         );
-      }, [e, n, r, s, i, o, a, l, u, d, f, h, p, m, g, x, y, v]),
+      }, [smdR, e, n, r, s, i, o, a, l, u, d, f, h, p, m, g, x, y, v]),
       c.jsx("div", {
         ref: w,
         className: `w-full h-full overflow-hidden relative ${t ?? ""}`,
@@ -40554,10 +40590,23 @@ function SG({
       (Il(), zn());
       let $s = Date.now(),
         or = 0;
+      let smdRaf = 0, smdIn = 0;
+      const smdRM = typeof matchMedia == "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
       function $n() {
-        const T = jr();
-        (Ko() && zn(), Mr(T), Ll(), Bl(T), Ki(null), requestAnimationFrame($n));
+        if (smdRM) return;
+        smdIn = Date.now();
+        smdRaf || document.hidden || ((jr(), (smdRaf = requestAnimationFrame(smdStep))));
       }
+      function smdStep() {
+        smdRaf = 0;
+        const T = jr();
+        (Ko() && zn(), Mr(T), Ll(), Bl(T), Ki(null));
+        !document.hidden && Date.now() - smdIn < 4e3 && (smdRaf = requestAnimationFrame(smdStep));
+      }
+      const smdWake = () => { smdIn && $n(); };
+      window.addEventListener("pointermove", smdWake, { passive: !0 });
+      window.addEventListener("touchstart", smdWake, { passive: !0 });
+      window.addEventListener("touchmove", smdWake, { passive: !0 });
       function jr() {
         const T = Date.now();
         let R = (T - $s) / 1e3;
@@ -67911,6 +67960,18 @@ const wse = ({ content: t, onChange: e }) => {
           }),
         });
   },
+  smdSG = (t) => {
+    const [e, n] = S.useState(!1);
+    return (
+      S.useEffect(() => {
+        if (typeof matchMedia == "function" && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        const r = () => { (n(!0), s()); },
+          s = () => ["pointermove", "pointerdown", "touchstart"].forEach((i) => window.removeEventListener(i, r));
+        return (["pointermove", "pointerdown", "touchstart"].forEach((i) => window.addEventListener(i, r, { passive: !0 })), s);
+      }, []),
+      e ? c.jsx(SG, t) : null
+    );
+  },
   Sse = new pO(),
   kse = () =>
     c.jsx(gO, {
@@ -67920,7 +67981,7 @@ const wse = ({ content: t, onChange: e }) => {
           children: [
             c.jsx(CF, {}),
             c.jsx(XI, { position: "top-right", richColors: !0 }),
-            c.jsx(SG, {
+            c.jsx(smdSG, {
               DENSITY_DISSIPATION: 3.5,
               VELOCITY_DISSIPATION: 2,
               PRESSURE: 0.1,
