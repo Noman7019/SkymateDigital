@@ -25768,25 +25768,6 @@ const b1 = "/assets/logo-Bhtw3nnM.png",
                         c.jsxs("b", {
                           className: "text-white flex items-center gap-2",
                           children: [
-                            c.jsx("span", { children: "🇵🇰" }),
-                            " Pakistan",
-                          ],
-                        }),
-                        "(Global Delivery Center) ",
-                        c.jsx("br", {}),
-                        " ",
-                        c.jsx("br", {}),
-                        "Office # 207 , 2nd Floor, Al Barsha Business Centre, ",
-                        c.jsx("br", {}),
-                        " Street 329, Al Barsha 1, Dubai.",
-                      ],
-                    }),
-                    c.jsxs("p", {
-                      className: "text-left",
-                      children: [
-                        c.jsxs("b", {
-                          className: "text-white flex items-center gap-2",
-                          children: [
                             c.jsx("span", { children: "🇦🇪" }),
                             " Dubai Office",
                           ],

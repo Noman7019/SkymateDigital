@@ -65,3 +65,10 @@ def addtel(m):
     return links + m.group(1)
 s = pat.sub(addtel, s)
 assert cnt == 2, cnt
+
+# 7. Remove the footer "Pakistan (Global Delivery Center)" block and its Office 207 address (owner decision 2026-10-20)
+i = s.index('" Street 329, Al Barsha 1, Dubai.",')
+a = s.rindex('children: [c.jsxs("p", {', 0, i)
+b = s.index('c.jsxs("p", {', i)
+s = s[:a] + 'children: [' + s[b:]
+assert "Office # 207" not in s and "Global Delivery Center" not in s
