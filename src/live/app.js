@@ -25751,6 +25751,14 @@ const b1 = "/assets/logo-Bhtw3nnM.png",
                       "text-[18px] sm:text-[26px] md:text-[38px] leading-[1.05] font-medium tracking-[-0.02em] text-left lg:text-right break-all sm:break-normal",
                     children: "contact@skymatedigitals.com",
                   }),
+                  c.jsxs("div", {
+                    className:
+                      "mt-3 flex flex-wrap sm:justify-end gap-x-6 gap-y-1 text-[16px] text-white/70",
+                    children: [
+                      c.jsx("a", { href: "tel:+971588621413", className: "hover:text-[#2A62EB] transition-colors duration-300", children: "🇦🇪 +971 58 862 1413" }),
+                      c.jsx("a", { href: "tel:+923000968859", className: "hover:text-[#2A62EB] transition-colors duration-300", children: "🇵🇰 +92 300 0968859" }),
+                    ],
+                  }),
                   c.jsx("div", {
                     className:
                       "mt-6 flex flex-col sm:flex-row sm:justify-end gap-6 sm:gap-16 text-[16px] text-white/70",
@@ -33182,7 +33190,7 @@ const cr = ({
                       className: `mt-4 text-white/90 text-[15px] sm:text-[20px] leading-[1.45] max-w-[560px] transition-all duration-700 ease-out ${e ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`,
                       style: { transitionDelay: e ? "150ms" : "0ms" },
                       children:
-                        "A Pakistan-based growth partner for ecommerce brands worldwide — Shopify & Amazon builds, performance media buying, and branding that converts.",
+                        "A Dubai and Pakistan based growth partner for ecommerce brands worldwide — Shopify & Amazon builds, performance media buying, and branding that converts.",
                     }),
                   ],
                 }),
@@ -34405,7 +34413,7 @@ const OH = () => {
                     className:
                       "mt-4 text-white/90 text-[15px] sm:text-[20px] leading-[1.45] max-w-[560px]",
                     children:
-                      "Join a Pakistan-based team delivering world-class digital products—remote-friendly, collaborative, and focused on real client outcomes.",
+                      "Join a Dubai and Pakistan based team delivering world-class digital products—remote-friendly, collaborative, and focused on real client outcomes.",
                   }),
                 ],
               }),
@@ -34741,7 +34749,8 @@ const OH = () => {
   HH = "e5d09f0f-46b1-49d8-9b70-77842df23dbb",
   qH = [
     { icon: bs, label: "Email", value: "contact@skymatedigitals.com" },
-    { icon: jB, label: "Phone", value: "+923000968859" },
+    { icon: jB, label: "Phone (UAE)", value: "+971 58 862 1413", href: "tel:+971588621413" },
+    { icon: jB, label: "Phone (Pakistan)", value: "+92 300 0968859", href: "tel:+923000968859" },
     { icon: CA, label: "Office", value: "Serving clients worldwide" },
     { icon: CA, label: "Dubai Office", value: "RAG Tower Business Center, Al Barsha, Dubai, UAE", href: "https://www.google.com/maps/search/?api=1&query=RAG+Tower+Business+Center+Al+Barsha+Dubai" },
   ],
@@ -34854,7 +34863,7 @@ const OH = () => {
                     className:
                       "mt-4 text-white/90 text-[15px] sm:text-[20px] leading-[1.45] max-w-[560px]",
                     children:
-                      "Premium support with personalized solutions—tell us what you're building, and we'll respond with clear next steps. Based in Pakistan, trusted by clients worldwide.",
+                      "Premium support with personalized solutions—tell us what you're building, and we'll respond with clear next steps. Based in Dubai and Pakistan, trusted by clients worldwide.",
                   }),
                 ],
               }),
@@ -35106,7 +35115,7 @@ const OH = () => {
                                             className:
                                               "text-sm font-medium text-[#0a0a0a]",
                                             children: d.href
-                                              ? c.jsx("a", { href: d.href, target: "_blank", rel: "noopener noreferrer", className: "hover:text-[#2A62EB] transition-colors", children: d.value })
+                                              ? c.jsx("a", { href: d.href, ...(d.href.startsWith("tel:") ? {} : { target: "_blank", rel: "noopener noreferrer" }), className: "hover:text-[#2A62EB] transition-colors", children: d.value })
                                               : d.value,
                                           }),
                                         ],
@@ -36762,6 +36771,16 @@ const ak = () => {
                                 c.jsx(vs, { size: 12 }),
                                 "skymatedigital.com",
                               ],
+                            }),
+                            c.jsxs("a", {
+                              href: "tel:+971588621413",
+                              style: { display: "flex", alignItems: "center", gap: 7, fontSize: 12, color: "rgba(255,255,255,0.38)", textDecoration: "none", marginTop: 8 },
+                              children: [c.jsx(jB, { size: 12 }), "+971 58 862 1413"],
+                            }),
+                            c.jsxs("a", {
+                              href: "tel:+923000968859",
+                              style: { display: "flex", alignItems: "center", gap: 7, fontSize: 12, color: "rgba(255,255,255,0.38)", textDecoration: "none", marginTop: 8 },
+                              children: [c.jsx(jB, { size: 12 }), "+92 300 0968859"],
                             }),
                             c.jsxs("a", {
                               href: "https://www.google.com/maps/search/?api=1&query=RAG+Tower+Business+Center+Al+Barsha+Dubai",
@@ -39650,6 +39669,16 @@ const bG = () => {
                             ],
                           }),
                           c.jsxs("a", {
+                            href: "tel:+971588621413",
+                            style: { display: "flex", alignItems: "center", gap: 7, fontSize: 12, color: "rgba(255,255,255,0.38)", textDecoration: "none", marginTop: 8 },
+                            children: [c.jsx(jB, { size: 12 }), "+971 58 862 1413"],
+                          }),
+                          c.jsxs("a", {
+                            href: "tel:+923000968859",
+                            style: { display: "flex", alignItems: "center", gap: 7, fontSize: 12, color: "rgba(255,255,255,0.38)", textDecoration: "none", marginTop: 8 },
+                            children: [c.jsx(jB, { size: 12 }), "+92 300 0968859"],
+                          }),
+                          c.jsxs("a", {
                             href: "https://www.google.com/maps/search/?api=1&query=RAG+Tower+Business+Center+Al+Barsha+Dubai",
                             target: "_blank",
                             rel: "noopener noreferrer",
@@ -40897,10 +40926,10 @@ const kG = "/assets/automation-Dz_G8EW7.jpg",
         "Scalability",
       ],
       author: {
-        name: "Mursleen Mamoon",
-        role: "Lead Solutions Architect",
+        name: "Noman Rashid",
+        role: "Founder & CEO, Sky Mate Digital",
         avatar:
-          "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+          "/assets/author-nr.svg",
       },
       status: "published",
       publishedAt: "2026-05-12T10:00:00.000Z",
@@ -40938,10 +40967,10 @@ const kG = "/assets/automation-Dz_G8EW7.jpg",
       category: "Automation",
       tags: ["AI", "Automation", "Workflows", "Productivity", "Make.com"],
       author: {
-        name: "Hamza Sheikh",
-        role: "Automation & AI Specialist",
+        name: "Noman Rashid",
+        role: "Founder & CEO, Sky Mate Digital",
         avatar:
-          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+          "/assets/author-nr.svg",
       },
       status: "published",
       publishedAt: "2026-04-28T09:15:00.000Z",
@@ -40975,10 +41004,10 @@ const kG = "/assets/automation-Dz_G8EW7.jpg",
       category: "SEO",
       tags: ["SEO", "Content Marketing", "Conversion Rate", "Copywriting"],
       author: {
-        name: "Ayesha Malik",
-        role: "Senior Content Strategist",
+        name: "Noman Rashid",
+        role: "Founder & CEO, Sky Mate Digital",
         avatar:
-          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80",
+          "/assets/author-nr.svg",
       },
       status: "published",
       publishedAt: "2026-04-15T14:20:00.000Z",
@@ -41013,10 +41042,10 @@ const kG = "/assets/automation-Dz_G8EW7.jpg",
       category: "Marketing",
       tags: ["Paid Ads", "Growth", "Meta Ads", "Google Ads", "Analytics"],
       author: {
-        name: "Daniyal Qureshi",
-        role: "Director of Growth Marketing",
+        name: "Noman Rashid",
+        role: "Founder & CEO, Sky Mate Digital",
         avatar:
-          "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
+          "/assets/author-nr.svg",
       },
       status: "published",
       publishedAt: "2026-03-30T11:00:00.000Z",
@@ -41042,10 +41071,10 @@ const kG = "/assets/automation-Dz_G8EW7.jpg",
       category: "Product",
       tags: ["UI/UX", "Product Design", "Figma", "Mobile App", "Frontend"],
       author: {
-        name: "Mursleen Mamoon",
-        role: "Lead Solutions Architect",
+        name: "Noman Rashid",
+        role: "Founder & CEO, Sky Mate Digital",
         avatar:
-          "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+          "/assets/author-nr.svg",
       },
       status: "published",
       publishedAt: "2026-03-18T08:00:00.000Z",
@@ -41081,10 +41110,10 @@ const kG = "/assets/automation-Dz_G8EW7.jpg",
         "Shopify",
       ],
       author: {
-        name: "Daniyal Qureshi",
-        role: "Director of Growth Marketing",
+        name: "Noman Rashid",
+        role: "Founder & CEO, Sky Mate Digital",
         avatar:
-          "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
+          "/assets/author-nr.svg",
       },
       status: "published",
       publishedAt: "2026-03-05T16:30:00.000Z",
@@ -67101,9 +67130,9 @@ const wse = ({ content: t, onChange: e }) => {
       [E, C] = S.useState("<p>Write your article content here...</p>"),
       [N, A] = S.useState(""),
       [M, I] = S.useState("Noman Rashid"),
-      [L, _] = S.useState("Lead Solutions Architect"),
+      [L, _] = S.useState("Founder & CEO, Sky Mate Digital"),
       [j, Y] = S.useState(
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+        "/assets/author-nr.svg",
       ),
       [G, Q] = S.useState("draft"),
       [P, O] = S.useState(!1),

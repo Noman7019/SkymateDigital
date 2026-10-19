@@ -35,5 +35,8 @@ rep('href: "mailto:skymatedigital@gmail.com",', 'href: "mailto:contact@skymatedi
 # 5. Dubai office address (see scripts/patch_address.py)
 exec(open(__import__('os').path.join(__import__('os').path.dirname(__file__), 'patch_address.py')).read())
 
+# 6. Owner content: authors, copy, phones (see scripts/patch_content.py)
+exec(open(__import__('os').path.join(__import__('os').path.dirname(__file__), 'patch_content.py')).read())
+
 open(dst, "w").write(s)
 print("patched ok")

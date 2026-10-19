@@ -42,6 +42,8 @@ function normalize_post(array $in, ?array $old): array {
         $p['author'] = ['name' => smd_clean_text($in['author']['name'] ?? '', 100), 'role' => smd_clean_text($in['author']['role'] ?? '', 100),
             'avatar' => smd_clean_url($in['author']['avatar'] ?? '')];
     if (empty($p['author']['name'])) $p['author'] = array_merge(is_array($p['author'] ?? null) ? $p['author'] : [], ['name' => SMD_DEFAULT_AUTHOR]);
+    if (empty($p['author']['role'])) $p['author']['role'] = SMD_DEFAULT_AUTHOR_ROLE;
+    if (empty($p['author']['avatar']) || str_contains((string)$p['author']['avatar'], 'images.unsplash.com')) $p['author']['avatar'] = SMD_DEFAULT_AUTHOR_AVATAR;
     if (array_key_exists('featured', $in)) $p['featured'] = (bool)$in['featured'];
     $status = array_key_exists('status', $in) ? (string)$in['status'] : ($p['status'] ?? 'draft');
     $p['status'] = in_array($status, ['published', 'draft'], true) ? $status : 'draft';

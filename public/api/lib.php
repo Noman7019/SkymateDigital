@@ -7,6 +7,9 @@ const SMD_SITE_URL = 'https://skymatedigital.com';
 const SMD_SITE_NAME = 'Sky Mate Digital';
 const SMD_DEFAULT_AUTHOR = 'Noman Rashid';
 const SMD_CONTACT_EMAIL = 'contact@skymatedigitals.com';
+const SMD_DEFAULT_AUTHOR_ROLE = 'Founder & CEO, Sky Mate Digital';
+const SMD_DEFAULT_AUTHOR_AVATAR = '/assets/author-nr.svg';
+const SMD_TELEPHONES = ['+971 58 862 1413', '+92 300 0968859'];
 
 function smd_config(): array {
     static $cfg = null;
@@ -54,7 +57,7 @@ function smd_db(): PDO {
 // Migration: seed the 6 default posts from the original site once.
 function smd_migrate(PDO $pdo): void {
     $v = $pdo->query("SELECT v FROM meta WHERE k='seeded'")->fetchColumn();
-    if ($v) return;
+    if ($v) { smd_migrate_authors($pdo); return; }
     $seed = json_decode((string)@file_get_contents(__DIR__ . '/seed-posts.json'), true) ?: [];
     $pdo->beginTransaction();
     foreach ($seed as $p) {
@@ -63,6 +66,20 @@ function smd_migrate(PDO $pdo): void {
         smd_save_row($pdo, $p, true);
     }
     $pdo->exec("INSERT OR REPLACE INTO meta (k,v) VALUES ('seeded','1')");
+    $pdo->commit();
+    smd_migrate_authors($pdo);
+}
+
+// Migration 2 (2026-10-20): all posts authored by Noman Rashid; remove placeholder personas and stock photos.
+function smd_migrate_authors(PDO $pdo): void {
+    if ($pdo->query("SELECT v FROM meta WHERE k='authors_v2'")->fetchColumn()) return;
+    $pdo->beginTransaction();
+    foreach ($pdo->query('SELECT data FROM posts')->fetchAll(PDO::FETCH_COLUMN) as $row) {
+        $p = json_decode($row, true);
+        $p['author'] = ['name' => SMD_DEFAULT_AUTHOR, 'role' => SMD_DEFAULT_AUTHOR_ROLE, 'avatar' => SMD_DEFAULT_AUTHOR_AVATAR];
+        smd_save_row($pdo, $p, false);
+    }
+    $pdo->exec("INSERT OR REPLACE INTO meta (k,v) VALUES ('authors_v2','1')");
     $pdo->commit();
 }
 
