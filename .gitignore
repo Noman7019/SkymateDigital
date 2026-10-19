@@ -25,3 +25,8 @@ playwright-report
 .DS_Store
 *.suo
 *.sw?
+
+# server-side blog data (never commit)
+public/api/config.php
+public/api/data/
+public/uploads/blog/

@@ -1,0 +1,15 @@
+# Only public entry points are reachable; everything else in /api is denied.
+<IfModule mod_authz_core.c>
+  Require all denied
+  <FilesMatch "^(blog|render|sitemap|rss)\.php$">
+    Require all granted
+  </FilesMatch>
+</IfModule>
+<IfModule !mod_authz_core.c>
+  Order deny,allow
+  Deny from all
+  <FilesMatch "^(blog|render|sitemap|rss)\.php$">
+    Allow from all
+  </FilesMatch>
+</IfModule>
+Options -Indexes

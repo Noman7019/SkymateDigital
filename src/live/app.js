@@ -1,13 +1,104 @@
-// Admin password check: compares SHA-256(password) with build-time VITE_ADMIN_PASSWORD_HASH.
-// If the env var is unset/invalid, admin login is disabled. Client-side only: NOT real security.
-const __SMD_ADMIN_HASH = (import.meta.env.VITE_ADMIN_PASSWORD_HASH || "").trim().toLowerCase();
-const __SMD_ADMIN_ENABLED = /^[0-9a-f]{64}$/.test(__SMD_ADMIN_HASH);
-async function __smdCheckAdminPassword(pw) {
-  if (!__SMD_ADMIN_ENABLED || !pw || !globalThis.crypto?.subtle) return false;
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pw));
-  const hex = [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
-  return hex === __SMD_ADMIN_HASH;
+// ---- Sky Mate Digital: blog API client (injected by scripts/patch_blog.py) ----
+const __SMD_API = "/api/blog.php";
+let __smdCsrf = "";
+async function __smdFetch(action, { method = "GET", params = {}, body, form } = {}) {
+  const q = new URLSearchParams({ action });
+  for (const [k, v] of Object.entries(params)) if (v !== undefined && v !== null && v !== "") q.set(k, String(v));
+  const headers = { Accept: "application/json" };
+  if (method !== "GET") {
+    if (!__smdCsrf) await __smdAuth.me();
+    headers["X-CSRF-Token"] = __smdCsrf;
+    if (!form) headers["Content-Type"] = "application/json";
+  }
+  const res = await fetch(`${__SMD_API}?${q}`, {
+    method, headers, credentials: "same-origin",
+    body: form ? form : body !== undefined ? JSON.stringify(body) : undefined,
+  });
+  let data = null;
+  try { data = await res.json(); } catch { /* non-JSON */ }
+  if (!res.ok) {
+    const err = new Error((data && data.error) || `Request failed (${res.status})`);
+    err.status = res.status;
+    throw err;
+  }
+  return data;
 }
+const __smdAuth = {
+  async me() { const d = await __smdFetch("me"); __smdCsrf = d.csrf; return d; },
+  async login(username, password) {
+    const d = await __smdFetch("login", { method: "POST", body: { username, password } });
+    __smdCsrf = d.csrf; return d.user;
+  },
+  async logout() { await __smdFetch("logout", { method: "POST", body: {} }); __smdCsrf = ""; },
+};
+class __SmdBlogApi {
+  async getPosts(e = {}) {
+    const { category, search, status = "published", page = 1, limit = 9, tag } = e;
+    return __smdFetch("list", { params: { category, search, status, page, limit, tag } });
+  }
+  async getPostBySlug(slug) {
+    try { return (await __smdFetch("post", { params: { slug } })).post; } catch (e) { if (e.status === 404) return null; throw e; }
+  }
+  async getPostById(id) {
+    try { return (await __smdFetch("post", { params: { id } })).post; } catch (e) { if (e.status === 404) return null; throw e; }
+  }
+  async getRelatedPosts(slug, category, limit = 3) {
+    return (await __smdFetch("related", { params: { slug, category, limit } })).posts;
+  }
+  async createPost(p) { return (await __smdFetch("create", { method: "POST", body: p })).post; }
+  async updatePost(id, p) { return (await __smdFetch("update", { method: "POST", params: { id }, body: p })).post; }
+  async togglePublishStatus(id) { return (await __smdFetch("toggle", { method: "POST", params: { id }, body: {} })).post; }
+  async deletePost(id) { return (await __smdFetch("delete", { method: "POST", params: { id }, body: {} })).ok; }
+  async uploadImage(file) {
+    if (file.size > 5 * 1024 * 1024) throw new Error("Image too large (max 5 MB)");
+    const form = new FormData(); form.append("file", file);
+    return (await __smdFetch("upload", { method: "POST", form })).url;
+  }
+  resetToDefaults() {}
+}
+function __smdToLocalInput(iso) {
+  if (!iso) return "";
+  const d = new Date(iso); if (isNaN(d)) return "";
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+function __SmdSeoPanel({ seo, setSeo, publishedAt, setPublishedAt, title, excerpt, slug }) {
+  const inp = "w-full bg-[#161c2d] border border-white/10 rounded-xl p-3 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#2A62EB]";
+  const lab = "block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5";
+  const set = (k) => (ev) => setSeo({ ...seo, [k]: ev.target.value });
+  const mt = seo.metaTitle || title || "", md = seo.metaDescription || excerpt || "";
+  return c.jsxs("div", {
+    className: "bg-[#101626] border border-white/10 rounded-2xl p-5 space-y-4",
+    children: [
+      c.jsx("p", { className: "text-xs font-semibold uppercase tracking-wider text-[#60A5FA]", children: "SEO & Publishing" }),
+      c.jsxs("div", { children: [
+        c.jsxs("label", { className: lab, children: ["Meta Title ", c.jsxs("span", { className: "text-white/40", style: { textTransform: "none" }, children: ["(", mt.length, "/60, defaults to post title)"] })] }),
+        c.jsx("input", { type: "text", maxLength: 120, value: seo.metaTitle, onChange: set("metaTitle"), placeholder: title || "Meta title", className: inp }),
+      ] }),
+      c.jsxs("div", { children: [
+        c.jsxs("label", { className: lab, children: ["Meta Description ", c.jsxs("span", { className: "text-white/40", style: { textTransform: "none" }, children: ["(", md.length, "/160, defaults to excerpt)"] })] }),
+        c.jsx("textarea", { rows: 2, maxLength: 320, value: seo.metaDescription, onChange: set("metaDescription"), placeholder: excerpt || "Meta description", className: inp + " resize-none" }),
+      ] }),
+      c.jsxs("div", { children: [
+        c.jsx("label", { className: lab, children: "Featured Image Alt Text" }),
+        c.jsx("input", { type: "text", maxLength: 250, value: seo.featuredImageAlt, onChange: set("featuredImageAlt"), placeholder: "Describe the featured image", className: inp }),
+      ] }),
+      c.jsxs("div", { children: [
+        c.jsx("label", { className: lab, children: "Publish Date" }),
+        c.jsx("input", { type: "datetime-local", value: __smdToLocalInput(publishedAt), onChange: (ev) => setPublishedAt(ev.target.value ? new Date(ev.target.value).toISOString() : ""), className: inp }),
+        c.jsx("p", { className: "text-[11px] text-white/40 mt-1", children: "Leave empty to use the moment you publish. Future dates are hidden until then." }),
+      ] }),
+      c.jsxs("div", { style: { background: "#fff", borderRadius: 12, padding: 12, fontFamily: "Arial, sans-serif" }, children: [
+        c.jsx("div", { style: { fontSize: 11, color: "#5f6368", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 4 }, children: "Google preview" }),
+        c.jsx("div", { style: { fontSize: 16, color: "#1a0dab", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }, children: mt ? mt + " | Sky Mate Digital" : "" }),
+        c.jsx("div", { style: { fontSize: 12, color: "#006621" }, children: "skymatedigital.com/blog/" + (slug || "") }),
+        c.jsx("div", { style: { fontSize: 13, color: "#4d5156", lineHeight: 1.4 }, children: md.length > 160 ? md.slice(0, 157) + "..." : md }),
+      ] }),
+    ],
+  });
+}
+// ---- end blog API client ----
+
 var y3 = Object.defineProperty;
 var Eb = (t) => {
   throw TypeError(t);
@@ -18908,43 +18999,22 @@ const Yl = "smd_admin_auth_session",
     const [e, n] = S.useState(null),
       [r, s] = S.useState(!0);
     S.useEffect(() => {
-      try {
-        const a = sessionStorage.getItem(Yl) || localStorage.getItem(Yl);
-        if (a) {
-          const l = JSON.parse(a);
-          n(l);
-        }
-      } catch (a) {
-        console.error("Error reading auth session", a);
-      } finally {
-        s(!1);
-      }
+      __smdAuth.me().then((a) => n(a.user)).catch((a) => console.error("Auth check failed", a)).finally(() => s(!1));
     }, []);
     const i = async (a, l) => {
-        if (
-          a.trim().toLowerCase() === "admin" &&
-          (await __smdCheckAdminPassword(l))
-        ) {
-          const f = {
-            username: "admin",
-            name: "Administrator",
-            role: "Super Admin",
-          };
-          return (n(f), sessionStorage.setItem(Yl, JSON.stringify(f)), !0);
+        try {
+          const f = await __smdAuth.login(a, l);
+          return (n(f), !0);
+        } catch (f) {
+          if (f && f.status !== 401) Ke.error(f.message);
+          return !1;
         }
-        return !1;
       },
       o = () => {
-        (n(null), sessionStorage.removeItem(Yl), localStorage.removeItem(Yl));
+        (n(null), __smdAuth.logout().catch(() => {}));
       };
     return c.jsx(b5.Provider, {
-      value: {
-        user: e,
-        isAuthenticated: !!e,
-        login: i,
-        logout: o,
-        isLoading: r,
-      },
+      value: { user: e, isAuthenticated: !!e, login: i, logout: o, isLoading: r },
       children: t,
     });
   },
@@ -41003,155 +41073,7 @@ const kG = "/assets/automation-Dz_G8EW7.jpg",
       .replace(/[^\w\s-]/g, "")
       .replace(/[\s_-]+/g, "-")
       .replace(/^-+|-+$/g, "");
-class NG {
-  getLocalStore() {
-    try {
-      const e = localStorage.getItem(Vd);
-      return e
-        ? JSON.parse(e)
-        : (localStorage.setItem(Vd, JSON.stringify($d)), $d);
-    } catch {
-      return $d;
-    }
-  }
-  setLocalStore(e) {
-    try {
-      localStorage.setItem(Vd, JSON.stringify(e));
-    } catch (n) {
-      console.error("Failed to save posts to localStorage:", n);
-    }
-  }
-  async getPosts(e = {}) {
-    const {
-      category: n,
-      search: r,
-      status: s = "all",
-      page: i = 1,
-      limit: o = 9,
-      tag: a,
-    } = e;
-    let l = this.getLocalStore();
-    if (
-      (s !== "all" && (l = l.filter((p) => p.status === s)),
-      n &&
-        n !== "All" &&
-        (l = l.filter((p) => p.category.toLowerCase() === n.toLowerCase())),
-      a &&
-        (l = l.filter((p) =>
-          p.tags.some((m) => m.toLowerCase() === a.toLowerCase()),
-        )),
-      r && r.trim() !== "")
-    ) {
-      const p = r.toLowerCase().trim();
-      l = l.filter(
-        (m) =>
-          m.title.toLowerCase().includes(p) ||
-          m.excerpt.toLowerCase().includes(p) ||
-          m.tags.some((g) => g.toLowerCase().includes(p)) ||
-          m.author.name.toLowerCase().includes(p),
-      );
-    }
-    l.sort(
-      (p, m) =>
-        new Date(m.publishedAt || m.createdAt).getTime() -
-        new Date(p.publishedAt || p.createdAt).getTime(),
-    );
-    const u = l.length,
-      d = Math.max(1, Math.ceil(u / o)),
-      f = (i - 1) * o;
-    return {
-      posts: l.slice(f, f + o),
-      total: u,
-      page: i,
-      limit: o,
-      totalPages: d,
-    };
-  }
-  async getPostBySlug(e) {
-    return this.getLocalStore().find((r) => r.slug === e) || null;
-  }
-  async getPostById(e) {
-    return this.getLocalStore().find((r) => r.id === e) || null;
-  }
-  async getRelatedPosts(e, n, r = 3) {
-    const s = this.getLocalStore().filter(
-        (a) => a.status === "published" && a.slug !== e,
-      ),
-      i = s.filter((a) => a.category.toLowerCase() === n.toLowerCase());
-    if (i.length >= r) return i.slice(0, r);
-    const o = s.filter((a) => !i.includes(a));
-    return [...i, ...o].slice(0, r);
-  }
-  async createPost(e) {
-    const n = this.getLocalStore(),
-      r = new Date().toISOString(),
-      s = e.id || `post-${Date.now()}`,
-      i = e.slug || Tf(e.title),
-      o = e.readTime || dk(e.content);
-    let a = i,
-      l = 1;
-    for (; n.some((f) => f.slug === a);) ((a = `${i}-${l}`), l++);
-    const u = {
-        ...e,
-        id: s,
-        slug: a,
-        readTime: o,
-        createdAt: r,
-        updatedAt: r,
-        publishedAt: e.publishedAt || (e.status === "published" ? r : ""),
-      },
-      d = [u, ...n];
-    return (this.setLocalStore(d), u);
-  }
-  async updatePost(e, n) {
-    const r = this.getLocalStore(),
-      s = r.findIndex((d) => d.id === e);
-    if (s === -1) throw new Error(`Post with id "${e}" not found.`);
-    const i = r[s],
-      o = new Date().toISOString(),
-      a = n.content !== void 0 ? n.content : i.content,
-      l = n.content !== void 0 ? dk(a) : i.readTime,
-      u = {
-        ...i,
-        ...n,
-        readTime: l,
-        updatedAt: o,
-        publishedAt:
-          n.status === "published" && !i.publishedAt
-            ? o
-            : n.publishedAt !== void 0
-              ? n.publishedAt
-              : i.publishedAt,
-      };
-    return ((r[s] = u), this.setLocalStore(r), u);
-  }
-  async togglePublishStatus(e) {
-    const r = this.getLocalStore().find((i) => i.id === e);
-    if (!r) throw new Error("Post not found");
-    const s = r.status === "published" ? "draft" : "published";
-    return this.updatePost(e, { status: s });
-  }
-  async deletePost(e) {
-    const n = this.getLocalStore(),
-      r = n.filter((s) => s.id !== e);
-    return r.length === n.length ? !1 : (this.setLocalStore(r), !0);
-  }
-  async uploadImage(e) {
-    return new Promise((n, r) => {
-      const s = new FileReader();
-      ((s.onload = () => {
-        typeof s.result == "string"
-          ? n(s.result)
-          : r(new Error("Failed to convert image to Data URL"));
-      }),
-        (s.onerror = (i) => r(i)),
-        s.readAsDataURL(e));
-    });
-  }
-  resetToDefaults() {
-    localStorage.setItem(Vd, JSON.stringify($d));
-  }
-}
+class NG extends __SmdBlogApi {}
 const er = new NG(),
   pM = (t) => {
     S.useEffect(() => {
@@ -42334,9 +42256,7 @@ const er = new NG(),
                   c.jsx("div", {
                     className:
                       "bg-[#141a2a] p-3 rounded-xl border border-white/5 text-[11px] text-white/60",
-                    children: __SMD_ADMIN_ENABLED
-                      ? "Authorized administrators only."
-                      : "Admin login is disabled on this build (VITE_ADMIN_PASSWORD_HASH not set).",
+                    children: "Authorized administrators only. Sessions are verified by the server.",
                   }),
                   c.jsx("button", {
                     type: "submit",
@@ -44002,56 +43922,6 @@ const Lx = ({ children: t }) => {
                   children: [
                     c.jsx(ox, { className: "w-3.5 h-3.5 text-[#3B82F6]" }),
                     "View Live Blog",
-                  ],
-                }),
-                c.jsxs(cP, {
-                  children: [
-                    c.jsx(tY, {
-                      asChild: !0,
-                      children: c.jsxs("button", {
-                        type: "button",
-                        className:
-                          "flex items-center gap-1.5 text-xs text-white/60 hover:text-amber-400 px-3 py-1.5 rounded-lg border border-white/10 hover:border-amber-400/30 transition-colors",
-                        title: "Reset blog posts to initial sample posts",
-                        children: [
-                          c.jsx(OB, { className: "w-3.5 h-3.5" }),
-                          "Reset Demo Data",
-                        ],
-                      }),
-                    }),
-                    c.jsxs(P1, {
-                      className:
-                        "bg-[#131929] border border-white/10 text-white",
-                      children: [
-                        c.jsxs(R1, {
-                          children: [
-                            c.jsx(O1, {
-                              children: "Reset Blog Data to Default?",
-                            }),
-                            c.jsx(I1, {
-                              className: "text-white/70",
-                              children:
-                                "This will reload the initial sample blog posts into local storage. Any custom posts you created will be replaced.",
-                            }),
-                          ],
-                        }),
-                        c.jsxs(D1, {
-                          children: [
-                            c.jsx(B1, {
-                              className:
-                                "bg-white/10 hover:bg-white/20 text-white border-none",
-                              children: "Cancel",
-                            }),
-                            c.jsx(L1, {
-                              onClick: l,
-                              className:
-                                "bg-amber-600 hover:bg-amber-700 text-white",
-                              children: "Reset Data",
-                            }),
-                          ],
-                        }),
-                      ],
-                    }),
                   ],
                 }),
                 c.jsx("div", { className: "h-5 w-[1px] bg-white/10" }),
@@ -67201,7 +67071,8 @@ const wse = ({ content: t, onChange: e }) => {
       [G, Q] = S.useState("draft"),
       [P, O] = S.useState(!1),
       [H, se] = S.useState(""),
-      [te, ce] = S.useState(!1);
+      [te, ce] = S.useState(!1),
+      [smdSeo, smdSetSeo] = S.useState({ metaTitle: "", metaDescription: "", featuredImageAlt: "" });
     S.useEffect(() => {
       if (!t) return;
       (async () => {
@@ -67224,7 +67095,8 @@ const wse = ({ content: t, onChange: e }) => {
             Y(ee.author.avatar || ""),
             Q(ee.status),
             O(!!ee.featured),
-            se(ee.publishedAt || ""));
+            se(ee.publishedAt || ""),
+            smdSetSeo({ metaTitle: ee.metaTitle || "", metaDescription: ee.metaDescription || "", featuredImageAlt: ee.featuredImageAlt || "" }));
         } catch {
           Ke.error("Failed to load post data");
         } finally {
@@ -67291,8 +67163,12 @@ const wse = ({ content: t, onChange: e }) => {
                 tags: x,
                 status: ee,
                 featured: P,
-                publishedAt:
-                  ee === "published" && !H ? new Date().toISOString() : H,
+                ...smdSeo,
+                publishedAt: H
+                  ? new Date(H).toISOString()
+                  : ee === "published"
+                    ? new Date().toISOString()
+                    : "",
                 author: { name: M, role: L, avatar: j },
               }),
               Ke.success("Blog post updated successfully!"))
@@ -67306,7 +67182,12 @@ const wse = ({ content: t, onChange: e }) => {
                 tags: x,
                 status: ee,
                 featured: P,
-                publishedAt: ee === "published" ? new Date().toISOString() : "",
+                ...smdSeo,
+                publishedAt: H
+                  ? new Date(H).toISOString()
+                  : ee === "published"
+                    ? new Date().toISOString()
+                    : "",
                 author: { name: M, role: L, avatar: j },
                 readTime: "",
               }),
@@ -67574,6 +67455,7 @@ const wse = ({ content: t, onChange: e }) => {
                               }),
                             ],
                           }),
+                          c.jsx(__SmdSeoPanel, { seo: smdSeo, setSeo: smdSetSeo, publishedAt: H, setPublishedAt: se, title: l, excerpt: w, slug: d }),
                           c.jsxs("div", {
                             className:
                               "bg-[#101626] border border-white/10 rounded-2xl p-5 space-y-2",

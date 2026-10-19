@@ -1,7 +1,8 @@
 name: Deploy to Hostinger
+# Manual only for now: Actions tab -> "Deploy to Hostinger" -> Run workflow.
 on:
   workflow_dispatch:
-concurrency: { group: hostinger-deploy, cancel-in-progress: true }
+concurrency: { group: hostinger-deploy, cancel-in-progress: false }
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -11,10 +12,22 @@ jobs:
         with: { node-version: 20, cache: npm }
       - run: npm ci
       - run: npm run build
+      - name: Check required files and secrets
         env:
-          VITE_ADMIN_PASSWORD_HASH: ${{ secrets.VITE_ADMIN_PASSWORD_HASH }}
-      - run: test -f dist/.htaccess
-      - name: FTP deploy
+          BLOG_ADMIN_BCRYPT: ${{ secrets.BLOG_ADMIN_BCRYPT }}
+          FTP_REMOTE_DIR: ${{ secrets.FTP_REMOTE_DIR }}
+        run: |
+          test -f dist/.htaccess && test -f dist/api/blog.php && test -f dist/api/render.php
+          [ -n "$FTP_REMOTE_DIR" ] || { echo "::error::Secret FTP_REMOTE_DIR is not set (e.g. /public_html/)"; exit 1; }
+          case "$BLOG_ADMIN_BCRYPT" in '$2'*) ;; *) echo "::error::Secret BLOG_ADMIN_BCRYPT missing or not a bcrypt hash"; exit 1;; esac
+          for f in $(find dist/api -name '*.php'); do php -l "$f" >/dev/null; done
+      - name: Write server config (admin bcrypt hash; denied to the web by api/.htaccess)
+        env:
+          BLOG_ADMIN_BCRYPT: ${{ secrets.BLOG_ADMIN_BCRYPT }}
+        run: |
+          php -r 'file_put_contents("dist/api/config.php", "<?php\n// Generated at deploy time. Do not commit.\nreturn " . var_export(["admin_user" => "admin", "admin_hash" => getenv("BLOG_ADMIN_BCRYPT"), "site_url" => "https://skymatedigital.com"], true) . ";\n");'
+          chmod 600 dist/api/config.php
+      - name: FTP deploy (never deletes remote files; never touches blog data/uploads)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_HOST }}
@@ -25,3 +38,10 @@ jobs:
           local-dir: ./dist/
           server-dir: ${{ secrets.FTP_REMOTE_DIR }}   # e.g. /public_html/ (trailing slash required)
           dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            api/data/**
+            uploads/blog/**
+            smd-blog-data/**
