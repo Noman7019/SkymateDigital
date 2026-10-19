@@ -32,5 +32,8 @@ rep('    { slug: "media-buying", label: "Media Buying " },\n', '')  # sidebar 'A
 # 4. Site contact email -> contact@skymatedigitals.com (owner's real mail domain)
 rep("contact@skymatedigital.com", "contact@skymatedigitals.com", 13)
 rep('href: "mailto:skymatedigital@gmail.com",', 'href: "mailto:contact@skymatedigitals.com",')  # old /terms-condition page (unrouted)
+# 5. Dubai office address (see scripts/patch_address.py)
+exec(open(__import__('os').path.join(__import__('os').path.dirname(__file__), 'patch_address.py')).read())
+
 open(dst, "w").write(s)
 print("patched ok")

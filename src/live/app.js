@@ -25754,7 +25754,7 @@ const b1 = "/assets/logo-Bhtw3nnM.png",
                   c.jsx("div", {
                     className:
                       "mt-6 flex flex-col sm:flex-row sm:justify-end gap-6 sm:gap-16 text-[16px] text-white/70",
-                    children: c.jsxs("p", {
+                    children: [c.jsxs("p", {
                       className: "text-left",
                       children: [
                         c.jsxs("b", {
@@ -25773,6 +25773,26 @@ const b1 = "/assets/logo-Bhtw3nnM.png",
                         " Street 329, Al Barsha 1, Dubai.",
                       ],
                     }),
+                    c.jsxs("p", {
+                      className: "text-left",
+                      children: [
+                        c.jsxs("b", {
+                          className: "text-white flex items-center gap-2",
+                          children: [
+                            c.jsx("span", { children: "🇦🇪" }),
+                            " Dubai Office",
+                          ],
+                        }),
+                        c.jsxs("a", {
+                          href: "https://www.google.com/maps/search/?api=1&query=RAG+Tower+Business+Center+Al+Barsha+Dubai",
+                          target: "_blank",
+                          rel: "noopener noreferrer",
+                          className: "hover:text-[#2A62EB] transition-colors duration-300",
+                          children: ["RAG Tower Business Center,", c.jsx("br", {}), " Al Barsha, Dubai, UAE"],
+                        }),
+                      ],
+                    }),
+                  ],
                   }),
                 ],
               }),
@@ -34723,6 +34743,7 @@ const OH = () => {
     { icon: bs, label: "Email", value: "contact@skymatedigitals.com" },
     { icon: jB, label: "Phone", value: "+923000968859" },
     { icon: CA, label: "Office", value: "Serving clients worldwide" },
+    { icon: CA, label: "Dubai Office", value: "RAG Tower Business Center, Al Barsha, Dubai, UAE", href: "https://www.google.com/maps/search/?api=1&query=RAG+Tower+Business+Center+Al+Barsha+Dubai" },
   ],
   Fd =
     "w-full border-0 border-b border-[#d7d7d7] bg-transparent px-0 py-2.5 text-[15px] text-[#0a0a0a] placeholder:text-[#b0b0b0] focus:border-[#2A62EB] focus:ring-0 focus:outline-none transition-colors",
@@ -35084,7 +35105,9 @@ const OH = () => {
                                           c.jsx("p", {
                                             className:
                                               "text-sm font-medium text-[#0a0a0a]",
-                                            children: d.value,
+                                            children: d.href
+                                              ? c.jsx("a", { href: d.href, target: "_blank", rel: "noopener noreferrer", className: "hover:text-[#2A62EB] transition-colors", children: d.value })
+                                              : d.value,
                                           }),
                                         ],
                                       }),
@@ -36739,6 +36762,13 @@ const ak = () => {
                                 c.jsx(vs, { size: 12 }),
                                 "skymatedigital.com",
                               ],
+                            }),
+                            c.jsxs("a", {
+                              href: "https://www.google.com/maps/search/?api=1&query=RAG+Tower+Business+Center+Al+Barsha+Dubai",
+                              target: "_blank",
+                              rel: "noopener noreferrer",
+                              style: { display: "flex", alignItems: "flex-start", gap: 7, fontSize: 12, color: "rgba(255,255,255,0.38)", textDecoration: "none", marginTop: 8, lineHeight: 1.5 },
+                              children: [c.jsx(CA, { size: 12, style: { flexShrink: 0, marginTop: 2 } }), "Dubai Office: RAG Tower Business Center, Al Barsha, Dubai, UAE"],
                             }),
                           ],
                         }),
@@ -39618,6 +39648,13 @@ const bG = () => {
                               c.jsx(vs, { size: 12 }),
                               "skymatedigital.com",
                             ],
+                          }),
+                          c.jsxs("a", {
+                            href: "https://www.google.com/maps/search/?api=1&query=RAG+Tower+Business+Center+Al+Barsha+Dubai",
+                            target: "_blank",
+                            rel: "noopener noreferrer",
+                            style: { display: "flex", alignItems: "flex-start", gap: 7, fontSize: 12, color: "rgba(255,255,255,0.38)", textDecoration: "none", marginTop: 8, lineHeight: 1.5 },
+                            children: [c.jsx(CA, { size: 12, style: { flexShrink: 0, marginTop: 2 } }), "Dubai Office: RAG Tower Business Center, Al Barsha, Dubai, UAE"],
                           }),
                         ],
                       }),
