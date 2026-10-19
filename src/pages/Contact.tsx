@@ -1,3 +1,4 @@
+import { submitWeb3Forms } from "@/lib/web3forms";
 import { useEffect, useRef, useState } from "react";
 import Reveal from "@/components/ui/Reveal";
 import AnimatedButton from "@/components/ui/AnimatedButton";
@@ -25,7 +26,6 @@ const underlineInput =
   "w-full border-0 border-b border-[#d7d7d7] bg-transparent px-0 py-2.5 text-[15px] text-[#0a0a0a] placeholder:text-[#b0b0b0] focus:border-[#2A62EB] focus:ring-0 focus:outline-none transition-colors";
 
 const Contact = () => {
-  const emailApiUrl = import.meta.env.VITE_EMAIL_API_URL || "http://localhost:4000/api/contact";
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,23 +76,7 @@ const Contact = () => {
     setError(null);
 
     try {
-      const res = await fetch(emailApiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          phone,
-          message,
-          category: "Contact Page Inquiry",
-        }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to send");
-      }
+      await submitWeb3Forms({ subject: `New Contact from ${name} — Sky Mate Digital`, name, email, phone: phone || "Not provided", message, replyto: email });
 
       setSubmitted(true);
       form.reset();

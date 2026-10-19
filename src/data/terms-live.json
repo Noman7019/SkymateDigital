@@ -1,0 +1,225 @@
+[
+  {
+    "id": "01",
+    "icon": "Sv",
+    "title": "Who We Are",
+    "accent": "ht",
+    "type": "services",
+    "intro": "Sky Mate Digital is an e-commerce growth agency specializing exclusively in the Shopify platform. Our Services include:",
+    "items": [
+      {
+        "label": "Store Creation",
+        "icon": "🛍️"
+      },
+      {
+        "label": "Branding & Identity",
+        "icon": "🎨"
+      },
+      {
+        "label": "Paid Campaigns",
+        "icon": "📢"
+      },
+      {
+        "label": "Organic Growth",
+        "icon": "🌱"
+      },
+      {
+        "label": "Store Management",
+        "icon": "🔧"
+      }
+    ],
+    "note": "All engagements are defined by a written proposal or Statement of Work (SOW)."
+  },
+  {
+    "id": "02",
+    "icon": "PA",
+    "title": "Eligibility",
+    "accent": "ht",
+    "type": "simple",
+    "content": "Our Services are intended for businesses and business owners. By engaging us, you confirm that you are at least 18 years old, have the authority to bind the business you represent, and that all information you provide to us is accurate and complete."
+  },
+  {
+    "id": "03",
+    "icon": "uB",
+    "title": "Proposals, Scope of Work & Agreements",
+    "accent": "ht",
+    "type": "simple",
+    "content": "All engagements are defined by a written proposal, quotation, or service agreement (\"Statement of Work\" or \"SOW\") issued by Sky Mate and accepted by you. In the event of any conflict between these Terms and a signed SOW, the SOW prevails for that engagement. The free store audit and any free creative samples we provide are offered as-is, for evaluation purposes only, and create no obligation on either party."
+  },
+  {
+    "id": "04",
+    "icon": "Ms",
+    "title": "Project Timelines",
+    "accent": "fc",
+    "type": "simple",
+    "content": "Published timelines (including our 21-day store launch timeline) are measured in business days and begin only once we have received the agreed deposit, all required content and brand assets, and collaborator or staff access to your Shopify store and related accounts. Delays in client approvals, feedback, content delivery, or account access will extend timelines accordingly and do not constitute a breach by Sky Mate."
+  },
+  {
+    "id": "05",
+    "icon": "Cl",
+    "title": "Client Responsibilities",
+    "accent": "fc",
+    "type": "checklist",
+    "intro": "Clients agree to:",
+    "items": [
+      "Provide timely access to your Shopify store, domain registrar, advertising accounts, and analytics accounts",
+      "Supply accurate product information, pricing, imagery, and legal content required for your store",
+      "Respond to approval requests and feedback rounds within the timeframes stated in your SOW",
+      "Ensure materials provided do not infringe any third party's intellectual property or rights",
+      "Comply with the terms of service of Shopify and all advertising platforms used in your campaigns",
+      "Maintain your own Shopify subscription, app subscriptions, domain fees, and advertising spend"
+    ]
+  },
+  {
+    "id": "06",
+    "icon": "lB",
+    "title": "Fees & Payment",
+    "accent": "ht",
+    "type": "billing",
+    "items": [
+      {
+        "text": "Project fees are payable per the milestone schedule in your SOW; a deposit is required before work begins and is non-refundable once work has commenced",
+        "highlight": false
+      },
+      {
+        "text": "Retainer fees are billed monthly in advance; advertising spend is paid by you directly to the ad platforms",
+        "highlight": false
+      },
+      {
+        "text": "We may pause work, withhold deliverables, or suspend Services on overdue accounts",
+        "highlight": true
+      },
+      {
+        "text": "Late payment fees may apply where stated in your SOW",
+        "highlight": true
+      }
+    ]
+  },
+  {
+    "id": "07",
+    "icon": "tl",
+    "title": "Revisions",
+    "accent": "ht",
+    "type": "simple",
+    "content": "Each project includes the number of revision rounds specified in your SOW. Additional revisions, scope changes, or new requests beyond the agreed scope will be quoted separately before work proceeds."
+  },
+  {
+    "id": "08",
+    "icon": "EA",
+    "title": "Ownership & Intellectual Property",
+    "accent": "fc",
+    "type": "ip",
+    "blocks": [
+      {
+        "icon": "✅",
+        "heading": "You Own Your Assets",
+        "text": "Upon full payment, your Shopify store and its content, all final brand assets we create for you, and your advertising accounts, pixels, and audiences belong to you."
+      },
+      {
+        "icon": "🔒",
+        "heading": "What Sky Mate Retains",
+        "text": "We retain our pre-existing tools, processes, frameworks, and templates; draft concepts not selected by you; and the right to display completed work in our portfolio unless you request confidentiality in writing."
+      }
+    ]
+  },
+  {
+    "id": "09",
+    "icon": "bB",
+    "title": "Third-Party Platforms",
+    "accent": "ht",
+    "type": "checklist",
+    "intro": "You acknowledge that:",
+    "items": [
+      "We do not control third-party platforms — including Shopify, Meta, Google, and TikTok — their pricing, features, algorithms, or policies",
+      "Platform changes may affect your store or campaigns, and we are not liable for losses arising from platform actions or outages",
+      "Your use of each platform is governed by that platform's own terms and policies"
+    ]
+  },
+  {
+    "id": "10",
+    "icon": "jA",
+    "title": "No Guarantee of Results",
+    "accent": "zd",
+    "type": "liability",
+    "intro": "We do not guarantee any specific level of:",
+    "items": [
+      "Sales, revenue, or traffic",
+      "ROAS or follower growth",
+      "Search rankings, unless expressly stated in a signed performance-based SOW"
+    ]
+  },
+  {
+    "id": "11",
+    "icon": "ms",
+    "title": "Confidentiality",
+    "accent": "ht",
+    "type": "simple",
+    "content": "Each party agrees to keep the other's non-public business information confidential and to use it only for the purpose of the engagement. This obligation survives the end of our engagement. We handle your customer data in accordance with our Privacy Policy and applicable law."
+  },
+  {
+    "id": "12",
+    "icon": "wA",
+    "title": "Term, Termination & Refunds",
+    "accent": "zd",
+    "type": "termination",
+    "intro": "This agreement may end when:",
+    "items": [
+      "A monthly retainer is cancelled by either party with 30 days' written notice",
+      "Either party terminates for material breach that remains uncured 14 days after written notice",
+      "Payment for completed milestones remains non-refundable upon termination"
+    ]
+  },
+  {
+    "id": "13",
+    "icon": "LB",
+    "title": "Limitation of Liability",
+    "accent": "zd",
+    "type": "liability",
+    "intro": "To the maximum extent permitted by law:",
+    "items": [
+      "Our total liability shall not exceed the fees paid in the 3 months preceding the claim",
+      "We are not liable for indirect, incidental, consequential, or special damages",
+      "This includes loss of profits, revenue, data, or goodwill"
+    ]
+  },
+  {
+    "id": "14",
+    "icon": "nB",
+    "title": "Indemnity",
+    "accent": "zd",
+    "type": "simple",
+    "content": "You agree to indemnify and hold Sky Mate harmless from claims arising out of materials or instructions you provide to us, your products and their quality, safety, or legality, your store's dealings with your customers, or your breach of these Terms or any platform's terms."
+  },
+  {
+    "id": "15",
+    "icon": "qu",
+    "title": "Non-Solicitation",
+    "accent": "fc",
+    "type": "simple",
+    "content": "During an active engagement and for 12 months after it ends, you agree not to directly solicit for employment or engage any Sky Mate team member introduced to you through the engagement, without our written consent."
+  },
+  {
+    "id": "16",
+    "icon": "vs",
+    "title": "Website Use",
+    "accent": "ht",
+    "type": "simple",
+    "content": "Content on this Site (text, graphics, logos, case studies) is owned by Sky Mate or its licensors and may not be copied or republished without permission. You agree not to misuse the Site, attempt to gain unauthorized access, or use it for unlawful purposes."
+  },
+  {
+    "id": "17",
+    "icon": "tl",
+    "title": "Changes to These Terms",
+    "accent": "ht",
+    "type": "simple",
+    "content": "We may update these Terms from time to time. The updated version will be posted on this page with a revised \"Last Updated\" date. Continued use of the Site or Services after changes take effect constitutes acceptance of the updated Terms."
+  },
+  {
+    "id": "18",
+    "icon": "Ev",
+    "title": "Governing Law & Disputes",
+    "accent": "ht",
+    "type": "simple",
+    "content": "These Terms are governed by the laws of the United Arab Emirates (Emirate of Dubai) or your jurisdiction of registration. The parties will first attempt to resolve any dispute amicably through good-faith negotiation; failing that, disputes shall be subject to the exclusive jurisdiction of the courts of Dubai, UAE, or your jurisdiction of registration."
+  }
+]

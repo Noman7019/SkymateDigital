@@ -1,0 +1,165 @@
+[
+  {
+    "id": "01",
+    "icon": "Ev",
+    "title": "Introduction",
+    "accent": "Ye",
+    "type": "paragraphs",
+    "content": [
+      "Sky Mate Digital (\"Sky Mate,\" \"we,\" \"us,\" or \"our\") respects your privacy. This Privacy Policy explains what personal data we collect through our website, skymatedigital.com, and in the course of providing our Shopify store creation, branding, advertising, organic growth, and store management services, how we use it, and the rights you have over it.",
+      "By using the Site or engaging our Services, you agree to this Privacy Policy."
+    ]
+  },
+  {
+    "id": "02",
+    "icon": "kv",
+    "title": "Information We Collect",
+    "accent": "Ye",
+    "type": "two-col",
+    "cols": [
+      {
+        "label": "You Provide Directly",
+        "items": [
+          "Contact details: name, email, phone/WhatsApp, company",
+          "Business details for a store audit or engagement",
+          "Billing information (cards handled by our payment providers)",
+          "Messages you send us by email, WhatsApp, or social media"
+        ]
+      },
+      {
+        "label": "Collected Automatically",
+        "items": [
+          "IP address",
+          "Browser and device type",
+          "Pages viewed and referral source",
+          "Time spent on the Site"
+        ]
+      }
+    ],
+    "note": "When you engage our Services, you may grant us access to your Shopify store and advertising accounts — see \"Client Customer Data\" below for how we handle that access."
+  },
+  {
+    "id": "03",
+    "icon": "PA",
+    "title": "How We Use Your Information",
+    "accent": "Ye",
+    "type": "list",
+    "items": [
+      "Respond to inquiries and deliver free audits or samples you request",
+      "Provide, manage, and improve our Services under an engagement",
+      "Prepare proposals, invoices, and manage payments",
+      "Communicate with you about your projects, including via email and WhatsApp",
+      "Send marketing about our services and offers, where permitted",
+      "Analyze and improve our Site and marketing performance",
+      "Comply with legal obligations and enforce our agreements"
+    ],
+    "note": "Where laws such as the EU/UK GDPR apply, our legal bases are: contract performance, our legitimate interests, your consent where required, and legal compliance."
+  },
+  {
+    "id": "04",
+    "icon": "ax",
+    "title": "How We Share Information",
+    "accent": "Ye",
+    "type": "sharing",
+    "items": [
+      "Service providers who help us operate — hosting, analytics, email, CRM, project management, design, and payment tools",
+      "Platforms you instruct us to use on your behalf, such as Shopify and advertising platforms",
+      "Subcontractors and team members working on your engagement, bound by confidentiality",
+      "Legal and safety recipients, where required by law or to protect our rights",
+      "A successor business, in the event of a merger, acquisition, or sale of our business"
+    ]
+  },
+  {
+    "id": "05",
+    "icon": "Cl",
+    "title": "Client Customer Data",
+    "accent": "Ye",
+    "type": "paragraphs",
+    "content": [
+      "For data about your store's customers that we access while providing the Services, you remain the data controller and we act as your processor. We process such data only on your documented instructions, keep it confidential, apply reasonable security measures, and do not use it for our own purposes.",
+      "We delete or return this data at the end of the engagement upon request, except where retention is required by law. You remain responsible for your own store's privacy policy and legal compliance toward your customers."
+    ]
+  },
+  {
+    "id": "06",
+    "icon": "vs",
+    "title": "International Transfers",
+    "accent": "Ye",
+    "type": "paragraphs",
+    "content": [
+      "We operate internationally, and your data may be processed in countries other than your own, including the United Arab Emirates, Pakistan, and the locations of our service providers. Where required by applicable law, we take appropriate steps to protect data transferred across borders."
+    ]
+  },
+  {
+    "id": "07",
+    "icon": "SA",
+    "title": "Cookies & Analytics",
+    "accent": "Ye",
+    "type": "pills",
+    "intro": "The Site uses cookies and similar technologies to make it work, understand usage, and measure our marketing:",
+    "items": [
+      "Essential cookies",
+      "Google Analytics",
+      "Meta Pixel",
+      "LinkedIn Insight Tag"
+    ],
+    "note": "You can control cookies through your browser settings and opt out of Google Analytics at any time. Disabling cookies may affect parts of the Site."
+  },
+  {
+    "id": "08",
+    "icon": "Ms",
+    "title": "Data Retention",
+    "accent": "Ye",
+    "type": "paragraphs",
+    "content": [
+      "We keep personal data only as long as needed for the purposes described above: inquiry data for as long as relevant to our business relationship; client engagement and billing records for as long as required for legal, accounting, and tax purposes; and marketing data until you opt out. Client platform access is removed at the end of an engagement."
+    ]
+  },
+  {
+    "id": "09",
+    "icon": "qu",
+    "title": "Security",
+    "accent": "Ye",
+    "type": "paragraphs",
+    "content": [
+      "We use reasonable organizational and technical safeguards to protect personal data, including access controls and least-privilege account access — collaborator or partner access rather than password sharing wherever possible. No method of transmission or storage is 100% secure, and we cannot guarantee absolute security."
+    ]
+  },
+  {
+    "id": "10",
+    "icon": "ms",
+    "title": "Your Rights",
+    "accent": "Ye",
+    "type": "rights",
+    "items": [
+      "Access",
+      "Correction",
+      "Deletion",
+      "Restriction",
+      "Portability",
+      "Opt-out"
+    ],
+    "contact": "contact@skymatedigital.com",
+    "note": "We may need to verify your identity before acting on a request. You may also have the right to complain to a data protection authority in your jurisdiction."
+  },
+  {
+    "id": "11",
+    "icon": "eB",
+    "title": "Children",
+    "accent": "Ye",
+    "type": "paragraphs",
+    "content": [
+      "Our Site and Services are intended for businesses and are not directed to children under 18. We do not knowingly collect personal data from children. If you believe a child has provided us personal data, contact us and we will delete it."
+    ]
+  },
+  {
+    "id": "12",
+    "icon": "tl",
+    "title": "Changes to This Policy",
+    "accent": "Ye",
+    "type": "paragraphs",
+    "content": [
+      "We may update this Privacy Policy from time to time. Updates will be posted on this page with a revised “Last Updated” date. Material changes will be highlighted on the Site or communicated to active clients directly."
+    ]
+  }
+]

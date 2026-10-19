@@ -17,9 +17,9 @@ The API listens on `http://localhost:4000/api/contact`.
 $env:SMTP_HOST="mail.skymatedigital.com"
 $env:SMTP_PORT="465"
 $env:SMTP_USER="info@skymatedigital.com"
-$env:SMTP_PASS="(c3OY=!r4-+C,CmT"
+$env:SMTP_PASS="<your-smtp-password>"
 $env:SMTP_FROM="info@skymatedigital.com"     # optional
-$env:SMTP_TO="info@skymatedigital.com"         # optional (defaults to maliksuhaib543@gmail.com)
+$env:SMTP_TO="info@skymatedigital.com"         # optional 
 
 npm run email:server
 ```

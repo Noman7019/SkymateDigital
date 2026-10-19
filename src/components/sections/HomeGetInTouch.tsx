@@ -1,3 +1,4 @@
+import { submitWeb3Forms } from "@/lib/web3forms";
 import React, { useRef, useState } from "react";
 import { Mail } from "lucide-react";
 import Reveal from "../ui/Reveal";
@@ -15,7 +16,6 @@ const underlineInput =
   "w-full border-0 border-b border-[#d0d0d0] bg-transparent px-0 py-2.5 text-[15px] text-[#0a0a0a] placeholder:text-[#b0b0b0] focus:border-[#2A62EB] focus:ring-0 focus:outline-none transition-colors";
 
 const HomeGetInTouch = () => {
-  const emailApiUrl = import.meta.env.VITE_EMAIL_API_URL || "http://localhost:4000/api/contact";
   const [category, setCategory] = useState<(typeof categories)[number]>(categories[0]);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,23 +45,7 @@ const HomeGetInTouch = () => {
     setError(null);
 
     try {
-      const res = await fetch(emailApiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          phone,
-          message,
-          category,
-        }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to send");
-      }
+      await submitWeb3Forms({ subject: `New Inquiry: ${category} — ${name}`, replyto: email, name, email, phone: phone || "Not provided", message, category });
 
       setSubmitted(true);
       form.reset();
