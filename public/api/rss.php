@@ -17,7 +17,7 @@ foreach ($posts as $p) {
     $url = $site . '/blog/' . $p['slug'];
     echo '<item><title>' . smd_xml($p['title']) . '</title><link>' . smd_xml($url) . '</link><guid isPermaLink="true">' . smd_xml($url) . '</guid>'
         . '<pubDate>' . gmdate(DATE_RSS, strtotime($p['publishedAt'] ?: $p['createdAt'])) . '</pubDate>'
-        . '<dc:creator>' . smd_xml($p['author']['name'] ?? 'Sky Mate Digital') . '</dc:creator>'
+        . '<dc:creator>' . smd_xml(($p['author']['name'] ?? '') ?: SMD_DEFAULT_AUTHOR) . '</dc:creator>'
         . '<category>' . smd_xml($p['category']) . '</category>'
         . '<description>' . smd_xml($p['metaDescription'] ?: $p['excerpt']) . '</description>'
         . '<content:encoded>' . $cdata($p['content']) . "</content:encoded></item>\n";

@@ -69,13 +69,13 @@ try {
             $jsonld[] = ['@context' => 'https://schema.org', '@type' => 'BlogPosting', 'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => $canonical],
                 'headline' => mb_substr($p['title'], 0, 110), 'description' => $desc, 'image' => [$image],
                 'datePublished' => $p['publishedAt'], 'dateModified' => $p['updatedAt'],
-                'author' => ['@type' => 'Person', 'name' => $p['author']['name'] ?? SMD_SITE_NAME, 'jobTitle' => $p['author']['role'] ?? ''],
+                'author' => ['@type' => 'Person', 'name' => ($p['author']['name'] ?? '') ?: SMD_DEFAULT_AUTHOR, 'jobTitle' => $p['author']['role'] ?? ''],
                 'publisher' => $org, 'articleSection' => $p['category'], 'keywords' => implode(', ', $p['tags'] ?? []),
                 'wordCount' => str_word_count(strip_tags($p['content'])), 'url' => $canonical];
             $jsonld[] = $crumbs([['Home', $site . '/'], ['Blog', $site . '/blog'], [$p['title'], $canonical]]);
             $body = '<main class="smd-ssr"><nav aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/blog">Blog</a></nav><article>'
                 . '<h1>' . h($p['title']) . '</h1>'
-                . '<p>By ' . h($p['author']['name'] ?? '') . ' · <time datetime="' . h($p['publishedAt']) . '">' . h(substr($p['publishedAt'], 0, 10)) . '</time> · ' . h($p['readTime'] ?? '') . '</p>'
+                . '<p>By ' . h(($p['author']['name'] ?? '') ?: SMD_DEFAULT_AUTHOR) . ' · <time datetime="' . h($p['publishedAt']) . '">' . h(substr($p['publishedAt'], 0, 10)) . '</time> · ' . h($p['readTime'] ?? '') . '</p>'
                 . ($p['featuredImage'] ? '<img src="' . h($p['featuredImage']) . '" alt="' . h($imageAlt) . '" width="1200" height="630" />' : '')
                 . $p['content'] . '</article></main>';  // content is sanitized on save
         }

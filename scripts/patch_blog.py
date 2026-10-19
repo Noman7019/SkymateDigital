@@ -72,3 +72,6 @@ i = s.index('"Short Excerpt ",')
 a = i
 for _ in range(2): a = s.rindex('c.jsxs("div", {', 0, a)
 s = s[:a] + "c.jsx(__SmdSeoPanel, { seo: smdSeo, setSeo: smdSetSeo, publishedAt: H, setPublishedAt: se, title: l, excerpt: w, slug: d }),\n                          " + s[a:]
+
+# 1e. default author for new posts
+rep('[M, I] = S.useState("Mursleen Mamoon"),', '[M, I] = S.useState("Noman Rashid"),')

@@ -41,6 +41,7 @@ function normalize_post(array $in, ?array $old): array {
     if (array_key_exists('author', $in) && is_array($in['author']))
         $p['author'] = ['name' => smd_clean_text($in['author']['name'] ?? '', 100), 'role' => smd_clean_text($in['author']['role'] ?? '', 100),
             'avatar' => smd_clean_url($in['author']['avatar'] ?? '')];
+    if (empty($p['author']['name'])) $p['author'] = array_merge(is_array($p['author'] ?? null) ? $p['author'] : [], ['name' => SMD_DEFAULT_AUTHOR]);
     if (array_key_exists('featured', $in)) $p['featured'] = (bool)$in['featured'];
     $status = array_key_exists('status', $in) ? (string)$in['status'] : ($p['status'] ?? 'draft');
     $p['status'] = in_array($status, ['published', 'draft'], true) ? $status : 'draft';

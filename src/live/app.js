@@ -67063,7 +67063,7 @@ const wse = ({ content: t, onChange: e }) => {
       [w, k] = S.useState(""),
       [E, C] = S.useState("<p>Write your article content here...</p>"),
       [N, A] = S.useState(""),
-      [M, I] = S.useState("Mursleen Mamoon"),
+      [M, I] = S.useState("Noman Rashid"),
       [L, _] = S.useState("Lead Solutions Architect"),
       [j, Y] = S.useState(
         "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
