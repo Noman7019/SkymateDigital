@@ -1,3 +1,17 @@
+# Sky Mate Digital website
+
+See **docs/SITE.md** for how this branch reproduces the live site, the page list, blog-admin limits and deployment.
+
+```bash
+npm ci
+npm run build   # -> dist/
+npm run preview
+```
+
+---
+
+## Legacy notes
+
 # Sky mate digital (Vite) + Next.js Email API
 
 This repo is a Vite + React site. The contact form auto-sends email via a **Next.js API route** (no Express).
