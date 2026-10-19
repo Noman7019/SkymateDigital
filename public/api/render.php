@@ -31,7 +31,8 @@ $pages = [
 $status = 200; $title = ''; $desc = ''; $canonical = $site . ($path === '/' ? '/' : $path);
 $image = $site . '/og-image.png'; $imageAlt = SMD_SITE_NAME; $ogType = 'website'; $robots = 'index, follow, max-image-preview:large';
 $jsonld = []; $body = ''; $extraHead = '';
-$org = ['@type' => 'Organization', '@id' => $site . '/#organization', 'name' => SMD_SITE_NAME, 'url' => $site . '/', 'logo' => $site . '/og-image.png'];
+$org = ['@type' => 'Organization', '@id' => $site . '/#organization', 'name' => SMD_SITE_NAME, 'url' => $site . '/', 'logo' => $site . '/og-image.png', 'email' => SMD_CONTACT_EMAIL,
+    'contactPoint' => ['@type' => 'ContactPoint', 'contactType' => 'customer support', 'email' => SMD_CONTACT_EMAIL]];
 $crumbs = fn(array $items) => ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' =>
     array_map(fn($i, $n) => ['@type' => 'ListItem', 'position' => $n + 1, 'name' => $i[0], 'item' => $i[1]], $items, array_keys($items))];
 

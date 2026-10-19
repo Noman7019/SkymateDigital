@@ -28,5 +28,9 @@ rep('''    "/blog",
 rep('detailPath: "/services/media-buying ",', 'detailPath: "/services",')
 rep('href: "/terms-condition",', 'href: "/terms-of-service",')
 rep('    { slug: "media-buying", label: "Media Buying " },\n', '')  # sidebar 'All Services' list on sub-pages
+
+# 4. Site contact email -> contact@skymatedigitals.com (owner's real mail domain)
+rep("contact@skymatedigital.com", "contact@skymatedigitals.com", 13)
+rep('href: "mailto:skymatedigital@gmail.com",', 'href: "mailto:contact@skymatedigitals.com",')  # old /terms-condition page (unrouted)
 open(dst, "w").write(s)
 print("patched ok")

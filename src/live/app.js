@@ -25749,7 +25749,7 @@ const b1 = "/assets/logo-Bhtw3nnM.png",
                   c.jsx("div", {
                     className:
                       "text-[18px] sm:text-[26px] md:text-[38px] leading-[1.05] font-medium tracking-[-0.02em] text-left lg:text-right break-all sm:break-normal",
-                    children: "contact@skymatedigital.com",
+                    children: "contact@skymatedigitals.com",
                   }),
                   c.jsx("div", {
                     className:
@@ -34635,11 +34635,11 @@ const OH = () => {
                     "We're always open to meeting talented people. Send your CV and a short note about what you'd love to work on.",
                 }),
                 c.jsxs("a", {
-                  href: "mailto:contact@skymatedigital.com?subject=Career%20Inquiry",
+                  href: "mailto:contact@skymatedigitals.com?subject=Career%20Inquiry",
                   className:
                     "inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-[#2A62EB] text-sm font-medium hover:bg-white/95 transition-colors",
                   children: [
-                    "contact@skymatedigital.com",
+                    "contact@skymatedigitals.com",
                     c.jsx(dt, { className: "w-4 h-4" }),
                   ],
                 }),
@@ -34720,7 +34720,7 @@ const OH = () => {
   WH = "/assets/contact-BiYmcZSi.jpg",
   HH = "e5d09f0f-46b1-49d8-9b70-77842df23dbb",
   qH = [
-    { icon: bs, label: "Email", value: "contact@skymatedigital.com" },
+    { icon: bs, label: "Email", value: "contact@skymatedigitals.com" },
     { icon: jB, label: "Phone", value: "+923000968859" },
     { icon: CA, label: "Office", value: "Serving clients worldwide" },
   ],
@@ -35615,7 +35615,7 @@ const OH = () => {
                 ],
               }),
               c.jsx("a", {
-                href: "mailto:skymatedigital@gmail.com",
+                href: "mailto:contact@skymatedigitals.com",
                 className:
                   "animate-bottom-top inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full bg-[#2A62EB] text-black font-normal text-[14px] sm:text-[16px] leading-[22px] sm:leading-[24px] transition-colors duration-200 hover:bg-[#2A62EB]/90",
                 children: c.jsxs("span", {
@@ -35775,7 +35775,7 @@ const OH = () => {
         "Portability",
         "Opt-out",
       ],
-      contact: "contact@skymatedigital.com",
+      contact: "contact@skymatedigitals.com",
       note: "We may need to verify your identity before acting on a request. You may also have the right to complain to a data protection authority in your jurisdiction.",
     },
     {
@@ -36707,7 +36707,7 @@ const ak = () => {
                               children: "Questions about your privacy?",
                             }),
                             c.jsxs("a", {
-                              href: "mailto:contact@skymatedigital.com",
+                              href: "mailto:contact@skymatedigitals.com",
                               style: {
                                 display: "flex",
                                 alignItems: "center",
@@ -36720,7 +36720,7 @@ const ak = () => {
                               },
                               children: [
                                 c.jsx(bs, { size: 12 }),
-                                "contact@skymatedigital.com",
+                                "contact@skymatedigitals.com",
                               ],
                             }),
                             c.jsxs("a", {
@@ -36885,11 +36885,11 @@ const ak = () => {
                               },
                               children: [
                                 c.jsxs("a", {
-                                  href: "mailto:contact@skymatedigital.com",
+                                  href: "mailto:contact@skymatedigitals.com",
                                   className: "pp-cta-btn",
                                   children: [
                                     c.jsx(bs, { size: 16 }),
-                                    "contact@skymatedigital.com",
+                                    "contact@skymatedigitals.com",
                                   ],
                                 }),
                                 c.jsxs("a", {
@@ -39586,7 +39586,7 @@ const bG = () => {
                             children: "CONTACT",
                           }),
                           c.jsxs("a", {
-                            href: "mailto:contact@skymatedigital.com",
+                            href: "mailto:contact@skymatedigitals.com",
                             style: {
                               display: "flex",
                               alignItems: "center",
@@ -39599,7 +39599,7 @@ const bG = () => {
                             },
                             children: [
                               c.jsx(bs, { size: 12 }),
-                              "contact@skymatedigital.com",
+                              "contact@skymatedigitals.com",
                             ],
                           }),
                           c.jsxs("a", {
@@ -39751,11 +39751,11 @@ const bG = () => {
                             },
                             children: [
                               c.jsxs("a", {
-                                href: "mailto:contact@skymatedigital.com",
+                                href: "mailto:contact@skymatedigitals.com",
                                 className: "cta-btn",
                                 children: [
                                   c.jsx(bs, { size: 16 }),
-                                  "contact@skymatedigital.com",
+                                  "contact@skymatedigitals.com",
                                 ],
                               }),
                               c.jsxs("a", {

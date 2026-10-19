@@ -6,6 +6,7 @@ if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'lib.php') { http_response_c
 const SMD_SITE_URL = 'https://skymatedigital.com';
 const SMD_SITE_NAME = 'Sky Mate Digital';
 const SMD_DEFAULT_AUTHOR = 'Noman Rashid';
+const SMD_CONTACT_EMAIL = 'contact@skymatedigitals.com';
 
 function smd_config(): array {
     static $cfg = null;
