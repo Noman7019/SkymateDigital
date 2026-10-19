@@ -86,6 +86,12 @@ Uses Web3Forms (public access key embedded, as on live). The old `email-api/` Ne
 ## Deploy
 `.github/workflows/deploy-hostinger.yml`: manual (`workflow_dispatch`) only. Builds, checks secrets, writes `api/config.php`, and uploads `dist/` over FTPS with
 SamKirkland/FTP-Deploy-Action, never deleting remote files. `dist/.htaccess` comes from `public/.htaccess`.
-Secrets: `FTP_HOST`, `FTP_USERNAME`, `FTP_PASSWORD`, `FTP_REMOTE_DIR` (e.g. `/public_html/`), `BLOG_ADMIN_BCRYPT`.
+Secrets: `FTP_HOST`, `FTP_USERNAME`, `FTP_PASSWORD`, `BLOG_ADMIN_BCRYPT`; optional `FTP_REMOTE_DIR` (default `public_html/`, relative to the FTP root `domains/skymatedigital.com`) and `BLOG_DATA_DIR` (variable or secret; absolute path for `blog.sqlite`, default auto).
 `VITE_ADMIN_PASSWORD_HASH` is no longer used and can be deleted.
 Back up the current `public_html/.htaccess` before the first deploy.
+
+## Technical notes (performance / SEO)
+- Bundle edits are generated: `python3 scripts/patch-live-bundle.py reference/live-bundle-2026-10-19.pretty.js src/live/app.js`. `scripts/patch_tech.py` does the WebP swaps (`scripts/webp-map.json`), video posters and lazy video loading, `loading="lazy"` on images, the single home H1, no GA/Clarity on localhost/LAN, removing the SSR fallback after mount, and admin-only sessions.
+- Videos in `public/assets` were re-encoded with ffmpeg (720p/1280 long side, H.264 crf 28, `+faststart`, AAC 96k when there is audio). Each has a `<name>-poster.webp`. The original large PNG/JPGs stay next to their `.webp` versions as fallbacks.
+- `render.php` + `api/pages.php` add crawlable copy for every main page, placed outside `#root` (hidden when JS runs, removed after mount, so no CLS). They also emit JSON-LD: Organization+ProfessionalService (square `/logo-512.png`, sameAs), WebSite, Service, BreadcrumbList.
+- PHP errors are never displayed; they go to `<data dir>/php-errors.log`, which is denied to the web. Uploads are rejected above 4000×4000 and downscaled to fit 1920px (needs GD).

@@ -1,12 +1,25 @@
 // ---- Sky Mate Digital: blog API client (injected by scripts/patch_blog.py) ----
 const __SMD_API = "/api/blog.php";
+const __smdPoster = (src) => String(src).replace(/\.mp4$/, "-poster.webp");
+const __smdLazyIO = typeof IntersectionObserver !== "undefined" ? new IntersectionObserver((entries) => {
+  for (const e of entries) if (e.isIntersecting) {
+    const v = e.target; __smdLazyIO.unobserve(v);
+    v.querySelectorAll("source[data-src]").forEach((x) => { x.src = x.dataset.src; x.removeAttribute("data-src"); });
+    v.load();
+  }
+}, { rootMargin: "300px 0px" }) : null;
+function __smdLazyVideo(v) {
+  if (!v || v.__smdLazy) return; v.__smdLazy = 1;
+  if (__smdLazyIO) __smdLazyIO.observe(v);
+  else v.querySelectorAll("source[data-src]").forEach((x) => { x.src = x.dataset.src; });
+}
 let __smdCsrf = "";
 async function __smdFetch(action, { method = "GET", params = {}, body, form } = {}) {
   const q = new URLSearchParams({ action });
   for (const [k, v] of Object.entries(params)) if (v !== undefined && v !== null && v !== "") q.set(k, String(v));
   const headers = { Accept: "application/json" };
   if (method !== "GET") {
-    if (!__smdCsrf) await __smdAuth.me();
+    if (!__smdCsrf) await __smdAuth.me(true);
     headers["X-CSRF-Token"] = __smdCsrf;
     if (!form) headers["Content-Type"] = "application/json";
   }
@@ -24,7 +37,7 @@ async function __smdFetch(action, { method = "GET", params = {}, body, form } = 
   return data;
 }
 const __smdAuth = {
-  async me() { const d = await __smdFetch("me"); __smdCsrf = d.csrf; return d; },
+  async me(init) { const d = await __smdFetch("me", { params: (init || window.location.pathname.startsWith("/admin")) ? { init: 1 } : {} }); __smdCsrf = d.csrf; return d; },
   async login(username, password) {
     const d = await __smdFetch("login", { method: "POST", body: { username, password } });
     __smdCsrf = d.csrf; return d.user;
@@ -25412,7 +25425,7 @@ function H9(t, { root: e, margin: n, amount: r, once: s = !1 } = {}) {
     i
   );
 }
-const b1 = "/assets/logo-Bhtw3nnM.png",
+const b1 = "/assets/logo-Bhtw3nnM.webp",
   IS = [
     { label: "About Us", to: "/about" },
     {
@@ -25466,7 +25479,7 @@ const b1 = "/assets/logo-Bhtw3nnM.png",
                 c.jsx(he, {
                   to: "/",
                   className: "flex items-center",
-                  children: c.jsx("img", {
+                  children: c.jsx("img", { loading: "lazy", decoding: "async",
                     src: b1,
                     alt: "Sky mate digital",
                     className: " w-[130px]",
@@ -25630,7 +25643,7 @@ const b1 = "/assets/logo-Bhtw3nnM.png",
     },
     {
       label: "LinkedIn",
-      href: "https://www.linkedin.com/company/skymatedigital/?viewAsMember=true",
+      href: "https://www.linkedin.com/company/skymatedigital/",
       abbr: "in",
     },
   ],
@@ -26002,7 +26015,7 @@ function o7({ duration: t = 35, gap: e = 56 }) {
                     {
                       className:
                         "flex items-center justify-center shrink-0 h-[44px]",
-                      children: c.jsx("img", {
+                      children: c.jsx("img", { loading: "lazy", decoding: "async",
                         src: o.src,
                         alt: o.alt,
                         className:
@@ -29600,9 +29613,9 @@ void main() {
         c.jsx(o7, {}),
       ],
     }),
-  BU = "/assets/branding-DKslkOEq.jpg",
-  FU = "/assets/mediabuy-FycswFsF.png",
-  _U = "/assets/cartad-kQO-mvta.jpg",
+  BU = "/assets/branding-DKslkOEq.webp",
+  FU = "/assets/mediabuy-FycswFsF.webp",
+  _U = "/assets/cartad-kQO-mvta.webp",
   zU = [
     {
       title: "Branding",
@@ -29718,7 +29731,7 @@ void main() {
                         children: c.jsx("div", {
                           className:
                             "relative h-[240px] rounded-xl overflow-hidden bg-[#f4f4f4] border border-[#e5e5e5]",
-                          children: c.jsx("img", {
+                          children: c.jsx("img", { loading: "lazy", decoding: "async",
                             src: t.image,
                             alt: `${t.title} ${t.subtitle}`,
                             width: 400,
@@ -30145,7 +30158,7 @@ void main() {
                     }),
                   ],
                 }),
-                c.jsxs("h1", {
+                c.jsxs("h2", {
                   className:
                     "text-center font-display font-bold text-[32px] sm:text-[44px] lg:text-6xl text-[#111114] flex flex-wrap items-center justify-center gap-x-3 gap-y-2 leading-tight",
                   children: [
@@ -30153,7 +30166,7 @@ void main() {
                     c.jsx("span", {
                       className:
                         "inline-flex items-center rounded-xl border border-black/5 bg-white px-3 py-1.5 shadow-[0_8px_24px_-8px_rgba(49,96,218,0.25)]",
-                      children: c.jsx("img", {
+                      children: c.jsx("img", { loading: "lazy", decoding: "async",
                         className: "w-[130px] sm:w-[170px] lg:w-[190px]",
                         src: HU,
                         alt: "Studio logo",
@@ -30178,7 +30191,7 @@ void main() {
                           boxShadow: "inset 0 0 0 1px rgba(49,96,218,0.12)",
                         },
                       }),
-                      c.jsx("img", {
+                      c.jsx("img", { loading: "lazy", decoding: "async",
                         className: "w-full block",
                         src: $U,
                         alt: "What makes us different",
@@ -30235,7 +30248,7 @@ void main() {
                       (x.currentTarget.style.boxShadow =
                         "0 12px 30px -14px rgba(17,17,20,0.15)"),
                     children: [
-                      c.jsx("img", {
+                      c.jsx("img", { loading: "lazy", decoding: "async",
                         className:
                           "w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]",
                         src: m,
@@ -30368,7 +30381,7 @@ void main() {
   QU = "/assets/linkedin-BGEfkCqx.png",
   JU = "/assets/secp-CQvYjSje.png",
   ZU = "/assets/tech1-DRUo_J0D.png",
-  eW = "/assets/tech2-CAWJf9vP.png",
+  eW = "/assets/tech2-CAWJf9vP.webp",
   tW = [
     {
       label: "THE WEBBY AWARDS",
@@ -30487,10 +30500,10 @@ void main() {
   sW = "/assets/3-BrjlYrw5.jpeg",
   iW = "/assets/4-BMx-TdEX.jpeg",
   oW = "/assets/5-DgR0FKZc.jpeg",
-  aW = "/assets/6-CgG74m9G.png",
+  aW = "/assets/6-CgG74m9G.webp",
   lW = "/assets/j-CegbtcSI.jpg",
   cW = "/assets/Capture-CdWz18Zq.jpg",
-  uW = "/assets/77-J37ZrMkU.jpeg",
+  uW = "/assets/77-J37ZrMkU.webp",
   dW = "/assets/66-C-hpJpXy.jpeg";
 function fW(t) {
   return Object.prototype.toString.call(t) === "[object Object]";
@@ -32536,8 +32549,8 @@ const qW = [
   lH = "/assets/salone-BrvqQVIt.webp",
   cH = "/assets/zbcreators-BhAEuTBm.webp",
   uH = "/assets/selliteasy-BDEcdDGs.webp",
-  dH = "/assets/fdf0dde15_Screenshot2026-03-12at53756AM-DF6ZMJwo.png",
-  fH = "/assets/235724c51_Screenshot2026-03-12at53816AM-Cu7tjSS5.png",
+  dH = "/assets/fdf0dde15_Screenshot2026-03-12at53756AM-DF6ZMJwo.webp",
+  fH = "/assets/235724c51_Screenshot2026-03-12at53816AM-Cu7tjSS5.webp",
   hH = "/assets/Pakbritisheducation-qlQ7GInx.webp",
   Ox = [
     {
@@ -32771,7 +32784,7 @@ const qW = [
         c.jsx(YW, {}),
       ],
     }),
-  gH = "/assets/hero-bg-C8NbgnDT.jpg",
+  gH = "/assets/hero-bg-C8NbgnDT.webp",
   Pl = () =>
     c.jsxs("section", {
       className: "relative overflow-hidden py-24 lg:py-32",
@@ -32779,7 +32792,7 @@ const qW = [
         c.jsxs("div", {
           className: "absolute inset-0",
           children: [
-            c.jsx("img", {
+            c.jsx("img", { loading: "lazy", decoding: "async",
               src: gH,
               alt: "",
               className: "h-full w-full object-cover object-center",
@@ -33139,10 +33152,10 @@ const cr = ({
                     loop: !0,
                     muted: !0,
                     playsInline: !0,
-                    preload: "auto",
+                    preload: "metadata",
                     className:
                       "hero-video-kenburns absolute inset-0 w-full h-full object-cover",
-                    children: c.jsx("source", { src: xH }),
+                     poster: __smdPoster(xH), children: c.jsx("source", { src: xH, }),
                   }),
                   c.jsx("div", {
                     className:
@@ -33609,7 +33622,7 @@ const cr = ({
       })
     );
   },
-  kH = "/assets/service-0n3GX0lG.jpg",
+  kH = "/assets/service-0n3GX0lG.webp",
   EH = () =>
     c.jsxs(c.Fragment, {
       children: [
@@ -33620,7 +33633,7 @@ const cr = ({
             c.jsxs("div", {
               className: "absolute inset-0",
               children: [
-                c.jsx("img", {
+                c.jsx("img", { loading: "lazy", decoding: "async",
                   src: kH,
                   alt: "",
                   className: "absolute inset-0 w-full h-full object-cover",
@@ -33832,7 +33845,7 @@ function AH() {
       c.jsxs("div", {
         className: "absolute inset-0",
         children: [
-          c.jsx("img", {
+          c.jsx("img", { loading: "lazy", decoding: "async",
             src: dM,
             alt: "",
             className: "absolute inset-0 w-full h-full object-cover",
@@ -34352,7 +34365,7 @@ const OH = () => {
     { icon: Sv, label: "Open roles", value: `${wh.length} positions` },
     { icon: Cl, label: "Team size", value: "50+ specialists" },
   ],
-  BH = "/assets/office2-6oasA_46.png",
+  BH = "/assets/office2-6oasA_46.webp",
   ok =
     "bg-clip-text text-transparent bg-[linear-gradient(110deg,#0a0a0a_0%,#2A62EB_22%,#0a0a0a_45%,#2A62EB_68%,#0a0a0a_100%)]",
   FH = ["All", ...Array.from(new Set(wh.map((t) => t.department)))],
@@ -34368,7 +34381,7 @@ const OH = () => {
             c.jsxs("div", {
               className: "absolute inset-0",
               children: [
-                c.jsx("img", {
+                c.jsx("img", { loading: "lazy", decoding: "async",
                   src: BH,
                   alt: "",
                   className: "absolute inset-0 w-full h-full object-cover",
@@ -34818,7 +34831,7 @@ const OH = () => {
             c.jsxs("div", {
               className: "absolute inset-0",
               children: [
-                c.jsx("img", {
+                c.jsx("img", { loading: "lazy", decoding: "async",
                   src: WH,
                   alt: "",
                   className: "absolute inset-0 w-full h-full object-cover",
@@ -35391,7 +35404,7 @@ const OH = () => {
         }),
       }),
     }),
-  JH = "/assets/portfolio-Da45I9hg.jpg",
+  JH = "/assets/portfolio-Da45I9hg.webp",
   ZH = () =>
     c.jsxs(c.Fragment, {
       children: [
@@ -35402,7 +35415,7 @@ const OH = () => {
             c.jsxs("div", {
               className: "absolute inset-0",
               children: [
-                c.jsx("img", {
+                c.jsx("img", { loading: "lazy", decoding: "async",
                   src: JH,
                   alt: "",
                   className: "absolute inset-0 w-full h-full object-cover",
@@ -36964,7 +36977,7 @@ const ak = () => {
     "data:image/png;base64,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",
   cq = "/assets/seo-w3-GpZmG.jpg",
   uq =
-    "/assets/ChatGPT%20Image%20Aug%2030_%202026_%2005_03_09%20PM-c5Fk5uBG.png",
+    "/assets/ChatGPT%20Image%20Aug%2030_%202026_%2005_03_09%20PM-c5Fk5uBG.webp",
   hM = "/assets/web_maintenance-GWnb94yV.jpg",
   dq = "/assets/Zapier-C84-ly6z.png",
   fq = "/assets/GoogleAds-NxmaabFo.jpg",
@@ -37269,7 +37282,7 @@ const ak = () => {
             c.jsxs("div", {
               className: "absolute inset-0",
               children: [
-                c.jsx("img", {
+                c.jsx("img", { loading: "lazy", decoding: "async",
                   src: t.heroImage,
                   alt: `${t.title} service`,
                   className: "absolute inset-0 w-full h-full object-cover",
@@ -37510,7 +37523,7 @@ const ak = () => {
                                     c.jsxs("div", {
                                       className: "flex items-center gap-3",
                                       children: [
-                                        c.jsx("img", {
+                                        c.jsx("img", { loading: "lazy", decoding: "async",
                                           src: r.logoUrl,
                                           alt: r.name,
                                           className:
@@ -37790,14 +37803,14 @@ const ak = () => {
   vq = () => c.jsx(Dl, { service: Rl["add-branding"] }),
   bq = () => c.jsx(Dl, { service: Rl["media-buying"] }),
   wq = () => c.jsx(Dl, { service: Rl["seo-content-writing"] }),
-  lk = "/assets/1-Dqhln3_m.jpg",
+  lk = "/assets/1-Dqhln3_m.webp",
   Sq = "/assets/dog-DsN5UmJ_.mp4",
-  ck = "/assets/2-DAm3_5HL.jpg",
-  uk = "/assets/3-B_fgqFXo.jpg",
-  kq = "/assets/m4-D-7zf_1g.jpg",
-  Eq = "/assets/m5-vwBqFuBj.jpg",
-  Cq = "/assets/m6-CrhwB5II.jpg",
-  Nq = "/assets/m8-D0hhIBcC.jpg",
+  ck = "/assets/2-DAm3_5HL.webp",
+  uk = "/assets/3-B_fgqFXo.webp",
+  kq = "/assets/m4-D-7zf_1g.webp",
+  Eq = "/assets/m5-vwBqFuBj.webp",
+  Cq = "/assets/m6-CrhwB5II.webp",
+  Nq = "/assets/m8-D0hhIBcC.webp",
   Tq = "/assets/1-2lg-VtI2lL0x.mp4",
   Aq = "/assets/1-3sh-n3SB20Sn.mp4",
   jq = "/assets/provid1-Cl47q9HO.mp4",
@@ -37827,7 +37840,7 @@ const ak = () => {
   Zq = "/assets/5-D3GEGist.jpg",
   eG = "/assets/6-BijYc5_d.jpg",
   tG = "/assets/7-BUq3VAPe.jpg",
-  nG = "/assets/8-sQEQR4HA.jpg",
+  nG = "/assets/8-sQEQR4HA.webp",
   rG = "/assets/9-DDJShmRS.jpg",
   sG = [Rq, Dq, Oq, Iq, Lq, Bq, Fq, _q],
   iG = [zq, $q, Vq, Uq, Wq, Hq, qq, Gq, Kq],
@@ -37866,7 +37879,7 @@ const ak = () => {
       children: c.jsx("div", {
         className: "reveal-track",
         children: t.map((i, o) =>
-          c.jsx("img", { src: i, alt: `${n} ${o + 1}`, loading: "lazy" }, o),
+          c.jsx("img", { loading: "lazy", decoding: "async", src: i, alt: `${n} ${o + 1}`, loading: "lazy" }, o),
         ),
       }),
     });
@@ -38003,7 +38016,7 @@ const ak = () => {
                             (n.currentTarget.style.boxShadow = `0 20px 50px -14px ${Jl}`),
                           onMouseLeave: (n) =>
                             (n.currentTarget.style.boxShadow = "none"),
-                          children: c.jsx("img", {
+                          children: c.jsx("img", { loading: "lazy", decoding: "async",
                             src: t,
                             alt: "content",
                             className:
@@ -38109,11 +38122,10 @@ const ak = () => {
                         loop: !0,
                         playsInline: !0,
                         controls: !0,
-                        preload: "metadata",
                         className:
                           "w-full h-full object-cover transition-transform duration-700 hover:scale-[1.02]",
-                        children: c.jsx("source", {
-                          src: t,
+                         preload: "none", poster: __smdPoster(t), ref: __smdLazyVideo, children: c.jsx("source", {
+                          "data-src": t,
                           type: "video/mp4",
                         }),
                       }),
@@ -38147,11 +38159,10 @@ const ak = () => {
                         muted: !0,
                         loop: !0,
                         playsInline: !0,
-                        preload: "metadata",
                         className:
                           "w-full h-full object-cover aspect-[9/16] transition-transform duration-700 group-hover:scale-[1.06]",
-                        children: c.jsx("source", {
-                          src: t,
+                         preload: "none", poster: __smdPoster(t), ref: __smdLazyVideo, children: c.jsx("source", {
+                          "data-src": t,
                           type: "video/mp4",
                         }),
                       }),
@@ -38288,7 +38299,7 @@ const ak = () => {
                 playsInline: !0,
                 controls: !0,
                 className: "w-full h-full object-cover",
-                children: c.jsx("source", { src: fG }),
+                 preload: "none", poster: __smdPoster(fG), ref: __smdLazyVideo, children: c.jsx("source", { "data-src": fG, }),
               }),
             }),
           }),
@@ -38368,7 +38379,7 @@ const ak = () => {
                 playsInline: !0,
                 controls: !0,
                 className: "w-full h-full object-cover",
-                children: c.jsx("source", { src: hG }),
+                 preload: "none", poster: __smdPoster(hG), ref: __smdLazyVideo, children: c.jsx("source", { "data-src": hG, }),
               }),
             }),
           }),
@@ -41290,7 +41301,7 @@ const er = new NG(),
                         className:
                           "lg:col-span-7 relative h-72 sm:h-96 lg:h-[450px] overflow-hidden",
                         children: [
-                          c.jsx("img", {
+                          c.jsx("img", { loading: "lazy", decoding: "async",
                             src: n.featuredImage,
                             alt: n.title,
                             className:
@@ -41363,7 +41374,7 @@ const er = new NG(),
                                 className: "flex items-center gap-3",
                                 children: [
                                   n.author.avatar
-                                    ? c.jsx("img", {
+                                    ? c.jsx("img", { loading: "lazy", decoding: "async",
                                         src: n.author.avatar,
                                         alt: n.author.name,
                                         className:
@@ -41544,7 +41555,7 @@ const er = new NG(),
                                 className:
                                   "relative h-52 overflow-hidden bg-[#161c2d]",
                                 children: [
-                                  c.jsx("img", {
+                                  c.jsx("img", { loading: "lazy", decoding: "async",
                                     src: b.featuredImage,
                                     alt: b.title,
                                     className:
@@ -41619,7 +41630,7 @@ const er = new NG(),
                                         className: "flex items-center gap-2.5",
                                         children: [
                                           b.author.avatar
-                                            ? c.jsx("img", {
+                                            ? c.jsx("img", { loading: "lazy", decoding: "async",
                                                 src: b.author.avatar,
                                                 alt: b.author.name,
                                                 className:
@@ -41902,7 +41913,7 @@ const er = new NG(),
                       className: "flex items-center gap-3.5",
                       children: [
                         e.author.avatar
-                          ? c.jsx("img", {
+                          ? c.jsx("img", { loading: "lazy", decoding: "async",
                               src: e.author.avatar,
                               alt: e.author.name,
                               className:
@@ -41983,7 +41994,7 @@ const er = new NG(),
             c.jsx("div", {
               className:
                 "my-10 rounded-3xl overflow-hidden border border-white/10 bg-[#101626] shadow-2xl shadow-black/60",
-              children: c.jsx("img", {
+              children: c.jsx("img", { loading: "lazy", decoding: "async",
                 src: e.featuredImage,
                 alt: e.title,
                 className: "w-full max-h-[500px] object-cover",
@@ -42109,7 +42120,7 @@ const er = new NG(),
                           children: [
                             c.jsx("div", {
                               className: "h-36 overflow-hidden bg-[#161c2d]",
-                              children: c.jsx("img", {
+                              children: c.jsx("img", { loading: "lazy", decoding: "async",
                                 src: g.featuredImage,
                                 alt: g.title,
                                 className:
@@ -42193,7 +42204,7 @@ const er = new NG(),
             c.jsx(he, {
               to: "/",
               className: "flex items-center",
-              children: c.jsx("img", {
+              children: c.jsx("img", { loading: "lazy", decoding: "async",
                 src: b1,
                 alt: "Sky Mate Digital",
                 className: "w-[120px]",
@@ -43942,7 +43953,7 @@ const Lx = ({ children: t }) => {
                 c.jsx(he, {
                   to: "/",
                   className: "flex items-center gap-2",
-                  children: c.jsx("img", {
+                  children: c.jsx("img", { loading: "lazy", decoding: "async",
                     src: b1,
                     alt: "Sky Mate Digital",
                     className: "w-[110px]",
@@ -44490,7 +44501,7 @@ const Lx = ({ children: t }) => {
                                       children: c.jsxs("div", {
                                         className: "flex items-center gap-3.5",
                                         children: [
-                                          c.jsx("img", {
+                                          c.jsx("img", { loading: "lazy", decoding: "async",
                                             src: v.featuredImage,
                                             alt: v.title,
                                             className:
@@ -44546,7 +44557,7 @@ const Lx = ({ children: t }) => {
                                         className: "flex items-center gap-2",
                                         children: [
                                           v.author.avatar
-                                            ? c.jsx("img", {
+                                            ? c.jsx("img", { loading: "lazy", decoding: "async",
                                                 src: v.author.avatar,
                                                 alt: v.author.name,
                                                 className:
@@ -67371,7 +67382,7 @@ const wse = ({ content: t, onChange: e }) => {
                             className: "flex items-center gap-3 mt-6",
                             children: [
                               j
-                                ? c.jsx("img", {
+                                ? c.jsx("img", { loading: "lazy", decoding: "async",
                                     src: j,
                                     alt: M,
                                     className:
@@ -67400,7 +67411,7 @@ const wse = ({ content: t, onChange: e }) => {
                         ],
                       }),
                       N &&
-                        c.jsx("img", {
+                        c.jsx("img", { loading: "lazy", decoding: "async",
                           src: N,
                           alt: "Featured preview",
                           className:
@@ -67738,7 +67749,7 @@ const wse = ({ content: t, onChange: e }) => {
                                     className:
                                       "relative group rounded-xl overflow-hidden border border-white/10",
                                     children: [
-                                      c.jsx("img", {
+                                      c.jsx("img", { loading: "lazy", decoding: "async",
                                         src: N,
                                         alt: "Featured preview",
                                         className: "w-full h-40 object-cover",
@@ -68391,7 +68402,11 @@ var Vse = class {
   },
   Use = new Vse(),
   x3 = Use;
-x3.initialize("G-XM80XF3K6E");
-Ise.clarity.init("t4g6ixdsp9");
-x3.send({ hitType: "pageview", page: window.location.pathname });
+const __smdIsDev = /^(localhost|127\.|0\.0\.0\.0|\[::1\]|10\.|192\.168\.)/.test(window.location.hostname);
+if (!__smdIsDev) {
+  x3.initialize("G-XM80XF3K6E");
+  Ise.clarity.init("t4g6ixdsp9");
+  x3.send({ hitType: "pageview", page: window.location.pathname });
+}
 ET(document.getElementById("root")).render(c.jsx(kse, {}));
+requestAnimationFrame(() => setTimeout(() => { const e = document.getElementById("smd-ssr"); if (e) e.remove(); }, 0));

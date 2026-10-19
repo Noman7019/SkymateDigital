@@ -69,9 +69,10 @@ try {
     $action = (string)($_GET['action'] ?? '');
     switch ($action) {
     case 'me':
-        smd_session();
+        // Public pages call this too: only start a session (cookie) for /admin (init=1) or an existing session.
+        if (!empty($_GET['init']) || !empty($_COOKIE['smd_admin'])) smd_session();
         out(['user' => smd_is_admin() ? ['username' => 'admin', 'name' => 'Administrator', 'role' => 'Super Admin'] : null,
-             'csrf' => $_SESSION['csrf'], 'loginEnabled' => smd_admin_enabled()]);
+             'csrf' => $_SESSION['csrf'] ?? '', 'loginEnabled' => smd_admin_enabled()]);
 
     case 'login':
         require_post(); require_csrf();
@@ -148,15 +149,21 @@ try {
     case 'upload':
         require_admin();
         $f = $_FILES['file'] ?? null;
-        if (!$f || $f['error'] !== UPLOAD_ERR_OK) fail('No file uploaded');
+        if (!$f) fail('No file uploaded');
+        if ($f['error'] === UPLOAD_ERR_INI_SIZE || $f['error'] === UPLOAD_ERR_FORM_SIZE) fail('Image too large for the server upload limit', 413);
+        if ($f['error'] !== UPLOAD_ERR_OK) fail('Upload failed (code ' . (int)$f['error'] . ')');
         if ($f['size'] > 5 * 1024 * 1024) fail('Image too large (max 5 MB)', 413);
         $types = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp', 'image/gif' => 'gif'];
         $mime = (new finfo(FILEINFO_MIME_TYPE))->file($f['tmp_name']);
-        if (!isset($types[$mime]) || @getimagesize($f['tmp_name']) === false) fail('Only JPG, PNG, WebP or GIF images are allowed', 415);
+        $dim = @getimagesize($f['tmp_name']);
+        if (!isset($types[$mime]) || $dim === false) fail('Only JPG, PNG, WebP or GIF images are allowed', 415);
+        [$w, $hgt] = $dim;
+        if ($w > SMD_UPLOAD_MAX_PX || $hgt > SMD_UPLOAD_MAX_PX) fail('Image too large: max ' . SMD_UPLOAD_MAX_PX . 'x' . SMD_UPLOAD_MAX_PX . ' pixels', 413);
         $dir = dirname(__DIR__) . '/uploads/blog/' . gmdate('Y/m');
         if (!is_dir($dir) && !mkdir($dir, 0755, true)) fail('Upload directory not writable', 500);
         $name = bin2hex(random_bytes(8)) . '.' . $types[$mime];
         if (!move_uploaded_file($f['tmp_name'], "$dir/$name")) fail('Failed to store file', 500);
+        smd_resize_image("$dir/$name", $mime, $w, $hgt);
         @chmod("$dir/$name", 0644);
         out(['url' => '/uploads/blog/' . gmdate('Y/m') . '/' . $name], 201);
 

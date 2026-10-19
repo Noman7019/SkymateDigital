@@ -2,6 +2,10 @@
 // Sky Mate Digital blog: shared library (DB, auth, sanitizing, SEO helpers).
 declare(strict_types=1);
 if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'lib.php') { http_response_code(404); exit; }
+// Never print PHP errors into HTML/JSON responses; log them to a protected file instead.
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+error_reporting(E_ALL);
 
 const SMD_SITE_URL = 'https://skymatedigital.com';
 const SMD_SITE_NAME = 'Sky Mate Digital';
@@ -24,19 +28,36 @@ function smd_config(): array {
 }
 function smd_site_url(): string { return rtrim((string)smd_config()['site_url'], '/'); }
 
+// True when $path is allowed by open_basedir (or no restriction is set). Avoids PHP warnings.
+function smd_path_allowed(string $path): bool {
+    $ob = (string)ini_get('open_basedir');
+    if ($ob === '') return true;
+    $path = rtrim(str_replace('\\', '/', $path), '/') . '/';
+    foreach (explode(PATH_SEPARATOR, $ob) as $base) {
+        $base = rtrim(str_replace('\\', '/', trim($base)), '/');
+        if ($base !== '' && str_starts_with($path, $base . '/')) return true;
+    }
+    return false;
+}
 function smd_data_dir(): string {
+    static $dir = null;
+    if ($dir !== null) return $dir;
     $cands = [];
-    if (smd_config()['data_dir']) $cands[] = smd_config()['data_dir'];
-    $cands[] = dirname(__DIR__, 2) . '/smd-blog-data';   // outside public_html (preferred)
-    $cands[] = __DIR__ . '/data';                         // fallback, denied by api/.htaccess
+    if (smd_config()['data_dir']) $cands[] = rtrim((string)smd_config()['data_dir'], '/');  // set by deploy config
+    $cands[] = dirname(__DIR__, 2) . '/smd-blog-data';   // outside public_html (only if open_basedir allows)
+    $cands[] = __DIR__ . '/data';                         // fallback inside public_html, denied by .htaccess
     foreach ($cands as $d) {
-        if (is_dir($d) && is_writable($d)) return $d;
-        if (!is_dir($d) && @mkdir($d, 0750, true)) {
-            @file_put_contents($d . '/.htaccess', "Require all denied\nDeny from all\n");
-            return $d;
-        }
+        if (!smd_path_allowed($d)) continue;
+        if (@is_dir($d)) { if (@is_writable($d)) return $dir = smd_protect_dir($d); continue; }
+        if (@mkdir($d, 0750, true)) return $dir = smd_protect_dir($d);
     }
     throw new RuntimeException('No writable data directory');
+}
+function smd_protect_dir(string $d): string {
+    if (!@is_file($d . '/.htaccess')) @file_put_contents($d . '/.htaccess', "Require all denied\n");
+    // log PHP errors next to the data (never web-readable)
+    ini_set('error_log', $d . '/php-errors.log');
+    return $d;
 }
 
 function smd_db(): PDO {
@@ -114,9 +135,17 @@ function smd_post_by(string $field, string $val, bool $includeDrafts = false): ?
     return $p;
 }
 
+// ASCII slug; non-Latin titles (e.g. Urdu) are transliterated when ext-intl is available,
+// otherwise kept as lowercase Unicode letters/digits. Uniqueness is enforced by the caller.
 function smd_slugify(string $s): string {
-    $s = strtolower(trim(preg_replace('/[^A-Za-z0-9]+/', '-', $s), '-'));
-    return substr($s, 0, 100) ?: 'post';
+    $s = trim($s);
+    if (function_exists('transliterator_transliterate')) {
+        $t = transliterator_transliterate('Any-Latin; Latin-ASCII; Lower()', $s);
+        if (is_string($t) && preg_match('/[A-Za-z0-9]/', $t)) $s = $t;
+    }
+    $s = mb_strtolower((string)preg_replace('/[^\p{L}\p{M}\p{N}]+/u', '-', $s), 'UTF-8');
+    $s = trim($s, '-');
+    return trim(mb_substr($s, 0, 100, 'UTF-8'), '-') ?: 'post';
 }
 function smd_read_time(string $html): string {
     $words = str_word_count(strip_tags($html));
@@ -186,7 +215,11 @@ function smd_session(): void {
     session_start();
     if (empty($_SESSION['csrf'])) $_SESSION['csrf'] = bin2hex(random_bytes(32));
 }
-function smd_is_admin(): bool { smd_session(); return !empty($_SESSION['admin']); }
+// Only touch the session when the browser already has one: public visitors never get a cookie.
+function smd_is_admin(): bool {
+    if (session_status() !== PHP_SESSION_ACTIVE && empty($_COOKIE['smd_admin'])) return false;
+    smd_session(); return !empty($_SESSION['admin']);
+}
 function smd_admin_enabled(): bool { $h = (string)smd_config()['admin_hash']; return $h !== '' && str_starts_with($h, '$2'); }
 
 // ---------- output helpers ----------
@@ -196,3 +229,22 @@ function smd_abs_url(string $u): string {
     return preg_match('#^https?://#i', $u) ? $u : smd_site_url() . '/' . ltrim($u, '/');
 }
 function smd_xml(string $s): string { return htmlspecialchars($s, ENT_XML1 | ENT_QUOTES, 'UTF-8'); }
+
+// ---------- uploads ----------
+const SMD_UPLOAD_MAX_PX = 4000;    // reject anything larger than 4000x4000
+const SMD_UPLOAD_FIT_PX = 1920;    // stored images are downscaled to fit 1920x1920 (needs ext-gd)
+// Downscale (and strip metadata from) an uploaded JPG/PNG/WebP in place. GIFs are left as-is (animation).
+function smd_resize_image(string $file, string $mime, int $w, int $h): void {
+    if (!function_exists('imagecreatetruecolor') || $mime === 'image/gif') return;
+    $scale = min(1, SMD_UPLOAD_FIT_PX / max($w, $h));
+    $load = ['image/jpeg' => 'imagecreatefromjpeg', 'image/png' => 'imagecreatefrompng', 'image/webp' => 'imagecreatefromwebp'][$mime] ?? null;
+    if (!$load || !function_exists($load)) return;
+    $src = @$load($file); if (!$src) return;
+    $nw = max(1, (int)round($w * $scale)); $nh = max(1, (int)round($h * $scale));
+    $dst = imagecreatetruecolor($nw, $nh);
+    if ($mime !== 'image/jpeg') { imagealphablending($dst, false); imagesavealpha($dst, true); }
+    imagecopyresampled($dst, $src, 0, 0, 0, 0, $nw, $nh, $w, $h);
+    $ok = match ($mime) { 'image/jpeg' => imagejpeg($dst, $file, 82), 'image/png' => imagepng($dst, $file, 8), 'image/webp' => imagewebp($dst, $file, 80) };
+    imagedestroy($src); imagedestroy($dst);
+    if (!$ok) error_log('[smd-blog] resize failed for ' . basename($file));
+}

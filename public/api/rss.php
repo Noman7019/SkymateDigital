@@ -14,7 +14,7 @@ echo '<atom:link href="' . smd_xml($site . '/blog/rss.xml') . '" rel="self" type
 if ($posts) echo '<lastBuildDate>' . gmdate(DATE_RSS, strtotime($posts[0]['updatedAt'])) . '</lastBuildDate>';
 echo "\n";
 foreach ($posts as $p) {
-    $url = $site . '/blog/' . $p['slug'];
+    $url = $site . '/blog/' . rawurlencode($p['slug']);
     echo '<item><title>' . smd_xml($p['title']) . '</title><link>' . smd_xml($url) . '</link><guid isPermaLink="true">' . smd_xml($url) . '</guid>'
         . '<pubDate>' . gmdate(DATE_RSS, strtotime($p['publishedAt'] ?: $p['createdAt'])) . '</pubDate>'
         . '<dc:creator>' . smd_xml(($p['author']['name'] ?? '') ?: SMD_DEFAULT_AUTHOR) . '</dc:creator>'

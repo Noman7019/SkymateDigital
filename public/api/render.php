@@ -4,6 +4,7 @@
 // crawlable initial HTML into the SPA shell (index.html). The React app then takes over.
 declare(strict_types=1);
 require __DIR__ . '/lib.php';
+require __DIR__ . '/pages.php';
 
 $shellFile = dirname(__DIR__) . '/index.html';
 $shell = (string)@file_get_contents($shellFile);
@@ -12,7 +13,7 @@ $path = rawurldecode($path);
 $site = smd_site_url();
 
 $pages = [
-    '/' => ['Sky Mate Digital | Shopify Store Development, Branding & Growth Agency',
+    '/' => ['Shopify Development & Branding Agency | Sky Mate Digital',
             'Sky Mate Digital builds high-converting Shopify stores, brands and AI automations that grow e-commerce revenue. Free store audit available.'],
     '/about' => ['About Us | Sky Mate Digital', 'Meet Sky Mate Digital: an e-commerce growth agency helping Shopify brands design, launch and scale.'],
     '/services' => ['Services | Sky Mate Digital', 'Shopify store development, branding, paid campaigns, organic growth and store automation services from Sky Mate Digital.'],
@@ -38,6 +39,7 @@ $org = ['@type' => ['Organization', 'ProfessionalService'], '@id' => $site . '/#
     'hasMap' => 'https://www.google.com/maps/search/?api=1&query=RAG+Tower+Business+Center+Al+Barsha+Dubai',
     'image' => $site . '/og-image.png',
     'contactPoint' => ['@type' => 'ContactPoint', 'contactType' => 'customer support', 'email' => SMD_CONTACT_EMAIL, 'telephone' => SMD_TELEPHONES]];
+$org = array_merge($org, smd_org_extra($site));  // square logo, sameAs, founder (pages.php)
 $crumbs = fn(array $items) => ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' =>
     array_map(fn($i, $n) => ['@type' => 'ListItem', 'position' => $n + 1, 'name' => $i[0], 'item' => $i[1]], $items, array_keys($items))];
 
@@ -45,26 +47,38 @@ try {
     if (isset($pages[$path])) {
         [$title, $desc] = $pages[$path];
         if ($path === '/terms-condition') $canonical = $site . '/terms-of-service';
-        if ($path === '/') $jsonld[] = ['@context' => 'https://schema.org'] + $org;
+        if ($path === '/') { $jsonld[] = ['@context' => 'https://schema.org'] + $org; $jsonld[] = smd_website_ld($site); }
+        if ($sp = smd_static_page($path)) {
+            $body = '<main class="smd-ssr"><h1>' . h($sp['h1']) . '</h1>' . $sp['html'] . '</main>' . smd_static_nav();
+            if ($sp['crumb']) {
+                $items = [['Home', $site . '/']];
+                if (str_starts_with($path, '/services/')) $items[] = ['Services', $site . '/services'];
+                $items[] = [$sp['crumb'], $canonical];
+                $jsonld[] = $crumbs($items);
+            }
+            if ($sp['service']) $jsonld[] = ['@context' => 'https://schema.org', '@type' => 'Service', 'name' => $sp['service'][0],
+                'description' => $sp['service'][1], 'url' => $canonical, 'serviceType' => $sp['service'][0], 'areaServed' => 'Worldwide',
+                'provider' => ['@id' => $site . '/#organization', '@type' => 'Organization', 'name' => SMD_SITE_NAME, 'url' => $site . '/']];
+        }
     }
     if ($path === '/blog') {
         $posts = smd_all_posts(false);
         $jsonld[] = ['@context' => 'https://schema.org', '@type' => 'Blog', 'name' => 'Sky Mate Digital Blog', 'url' => $site . '/blog',
             'publisher' => $org, 'blogPost' => array_map(fn($p) => ['@type' => 'BlogPosting', 'headline' => $p['title'],
-                'url' => $site . '/blog/' . $p['slug'], 'datePublished' => $p['publishedAt']], array_slice($posts, 0, 20))];
+                'url' => $site . '/blog/' . rawurlencode($p['slug']), 'datePublished' => $p['publishedAt']], array_slice($posts, 0, 20))];
         $jsonld[] = $crumbs([['Home', $site . '/'], ['Blog', $site . '/blog']]);
         $extraHead .= '<link rel="alternate" type="application/rss+xml" title="Sky Mate Digital Blog" href="' . h($site) . '/blog/rss.xml" />' . "\n";
         $body = '<main class="smd-ssr"><h1>Sky Mate Digital Blog</h1><p>' . h($desc) . '</p><ul>';
-        foreach ($posts as $p) $body .= '<li><article><h2><a href="/blog/' . h($p['slug']) . '">' . h($p['title']) . '</a></h2><p>' . h($p['excerpt']) . '</p><time datetime="' . h($p['publishedAt']) . '">' . h(substr($p['publishedAt'], 0, 10)) . '</time></article></li>';
+        foreach ($posts as $p) $body .= '<li><article><h2><a href="/blog/' . h(rawurlencode($p['slug'])) . '">' . h($p['title']) . '</a></h2><p>' . h($p['excerpt']) . '</p><time datetime="' . h($p['publishedAt']) . '">' . h(substr($p['publishedAt'], 0, 10)) . '</time></article></li>';
         $body .= '</ul></main>';
-    } elseif (preg_match('#^/blog/([a-z0-9-]+)$#', $path, $m)) {
+    } elseif (preg_match('#^/blog/([\p{Ll}\p{Lo}\p{M}\p{N}-]+)$#u', $path, $m)) {
         $p = smd_post_by('slug', $m[1], false);
         if (!$p) {
             $status = 404; $title = 'Post not found | Sky Mate Digital'; $desc = 'This article could not be found.'; $robots = 'noindex, follow';
         } else {
             $title = ($p['metaTitle'] ?: $p['title']) . ' | Sky Mate Digital';
             $desc = $p['metaDescription'] ?: $p['excerpt'];
-            $canonical = $site . '/blog/' . $p['slug'];
+            $canonical = $site . '/blog/' . rawurlencode($p['slug']);
             $image = smd_abs_url((string)($p['featuredImage'] ?? '')); $imageAlt = $p['featuredImageAlt'] ?: $p['title'];
             $ogType = 'article';
             $extraHead .= '<meta property="article:published_time" content="' . h($p['publishedAt']) . '" />' . "\n";
@@ -82,7 +96,7 @@ try {
             $body = '<main class="smd-ssr"><nav aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/blog">Blog</a></nav><article>'
                 . '<h1>' . h($p['title']) . '</h1>'
                 . '<p>By ' . h(($p['author']['name'] ?? '') ?: SMD_DEFAULT_AUTHOR) . ' · <time datetime="' . h($p['publishedAt']) . '">' . h(substr($p['publishedAt'], 0, 10)) . '</time> · ' . h($p['readTime'] ?? '') . '</p>'
-                . ($p['featuredImage'] ? '<img src="' . h($p['featuredImage']) . '" alt="' . h($imageAlt) . '" width="1200" height="630" />' : '')
+                . (!empty($p['featuredImage']) ? '<img src="' . h($p['featuredImage']) . '" alt="' . h($imageAlt) . '" width="1200" height="630" />' : '')
                 . $p['content'] . '</article></main>';  // content is sanitized on save
         }
     } elseif (preg_match('#^/admin(/|$)#', $path)) {
@@ -123,7 +137,9 @@ $head = '<title>' . h($title) . "</title>\n"
 foreach ($jsonld as $j) $head .= '<script type="application/ld+json">' . json_encode($j, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) . "</script>\n";
 $shell = preg_replace('#</head>#i', $head . '</head>', $shell, 1);
 if ($body !== '') {
-    $style = '<style>.smd-ssr{max-width:820px;margin:0 auto;padding:120px 20px 60px;font-family:Inter,system-ui,sans-serif;color:#111;line-height:1.7}.smd-ssr img{max-width:100%;height:auto;border-radius:12px}.smd-ssr h1{font-size:2.2rem;line-height:1.2}</style>';
-    $shell = str_replace('<div id="root"></div>', $style . '<div id="root">' . $body . '</div>', $shell);
+    // CLS: the crawlable copy lives OUTSIDE #root. With JS it is visually hidden immediately (no layout
+    // shift) and removed by the app after mount; without JS (crawlers, AI bots) it is shown normally.
+    $style = '<script>document.documentElement.className+=" smd-js"</script><style>.smd-js #smd-ssr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}#smd-ssr nav ul{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:12px;justify-content:center}.smd-ssr{max-width:820px;margin:0 auto;padding:120px 20px 60px;font-family:Inter,system-ui,sans-serif;color:#111;line-height:1.7}.smd-ssr img{max-width:100%;height:auto;border-radius:12px}.smd-ssr h1{font-size:2.2rem;line-height:1.2}</style>';
+    $shell = str_replace('<div id="root"></div>', $style . '<div id="root"></div><div id="smd-ssr">' . $body . '</div>', $shell);
 }
 echo $shell;

@@ -9,6 +9,8 @@ def rep(old, new, n=1):
 
 # 1. Blog/admin -> PHP API (see scripts/patch_blog.py)
 exec(open(__import__('os').path.join(__import__('os').path.dirname(__file__), 'patch_blog.py')).read())
+# 1b. Technical/performance/SEO fixes (see scripts/patch_tech.py)
+exec(open(__import__('os').path.join(__import__('os').path.dirname(__file__), 'patch_tech.py')).read())
 
 # 2. Routes: drop removed pages (they fall through to the 404 route).
 for path in ["/pricing", "/careers", "/services/app-development", "/services/digital-marketing",

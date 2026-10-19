@@ -1,0 +1,9 @@
+# Hashed, content-addressed build assets: cache for 1 year.
+Options -Indexes
+<IfModule mod_headers.c>
+  Header set Cache-Control "public, max-age=31536000, immutable"
+</IfModule>
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 year"
+</IfModule>

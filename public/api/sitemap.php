@@ -16,7 +16,7 @@ foreach ($static as $u => $prio) {
         . '<priority>' . $prio . "</priority></url>\n";
 }
 foreach ($posts as $p) {
-    echo '  <url><loc>' . smd_xml($site . '/blog/' . $p['slug']) . '</loc><lastmod>' . smd_xml(substr($p['updatedAt'], 0, 10)) . '</lastmod><priority>0.8</priority>';
+    echo '  <url><loc>' . smd_xml($site . '/blog/' . rawurlencode($p['slug'])) . '</loc><lastmod>' . smd_xml(substr($p['updatedAt'], 0, 10)) . '</lastmod><priority>0.8</priority>';
     if (!empty($p['featuredImage'])) echo '<image:image><image:loc>' . smd_xml(smd_abs_url($p['featuredImage'])) . '</image:loc></image:image>';
     echo "</url>\n";
 }
