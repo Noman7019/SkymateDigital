@@ -20,6 +20,7 @@ import ServiceDigitalMarketing from "./pages/ServiceDigitalMarketing";
 import ServiceAutomationAI from "./pages/ServiceAutomationAI";
 import ServiceWebsiteMaintenance from "./pages/ServiceWebsiteMaintenance";
 import ServiceSeoContentWriting from "./pages/ServiceSeoContentWriting";
+import ContentCreation from "./pages/ContentCreationPortfolio";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const App = () => (
               <Route path="/services/website-maintenance" element={<ServiceWebsiteMaintenance />} />
               <Route path="/services/seo-content-writing" element={<ServiceSeoContentWriting />} />
               <Route path="/terms-condition" element={<Terms/>} />
+              <Route path="/content-creation" element={<ContentCreation />} />
               <Route path="/privacy-policy" element={<Privacy />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

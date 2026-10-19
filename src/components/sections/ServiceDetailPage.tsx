@@ -1,4 +1,5 @@
 import { ArrowRight, CheckCircle2, Sparkles, Layers3, Rocket } from "lucide-react";
+import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import CTASection from "@/components/sections/CTASection";
 import { ServiceDetail, ServiceSlug, howItWorks, serviceOrder } from "@/data/serviceDetails";
@@ -38,9 +39,11 @@ const ServiceDetailPage = ({ service }: ServiceDetailPageProps) => {
                   <span className="inline-flex h-[10px] w-[10px] rounded-full bg-[#2A62EB]" />
                   DESCRIPTIONS
                 </p>
+
                 <h2 className="text-[34px] sm:text-[44px] leading-[1.08] font-display font-bold text-[#0a0a0a] mb-6">
                   Building measurable outcomes
                 </h2>
+
                 <div className="space-y-5">
                   {service.descriptions.map((paragraph) => (
                     <p key={paragraph} className="text-[16px] leading-[1.8] text-[#555]">
@@ -51,12 +54,32 @@ const ServiceDetailPage = ({ service }: ServiceDetailPageProps) => {
 
                 <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {service.comprehensiveItems.map((item) => (
-                    <div key={item} className="flex items-center gap-3 rounded-xl border border-[#efe3cb] bg-[#fffdfa] px-4 py-3">
+                    <div
+                      key={item}
+                      className="flex items-center gap-3 rounded-xl border border-[#efe3cb] bg-[#fffdfa] px-4 py-3"
+                    >
                       <CheckCircle2 className="h-4 w-4 text-[#2A62EB] shrink-0" />
                       <p className="text-sm text-[#222]">{item}</p>
                     </div>
                   ))}
                 </div>
+                {service.slug === "seo-content-writing" && (
+  <div className="mt-10">
+    <Link
+      to="/content-creation"
+      className="group inline-flex items-center gap-3 rounded-full bg-[#2A62EB] px-7 py-4 text-white font-medium text-sm transition-all duration-300 hover:bg-[#1746b8] hover:scale-[1.02]"
+    >
+      View Portfolio
+
+      <span className="transition-transform duration-300 group-hover:translate-x-1">
+        →
+      </span>
+    </Link>
+  </div>
+)}
+
+              
+              
               </div>
 
               <div className="rounded-[28px] bg-white p-6 sm:p-10 lg:p-12 border border-[#e9e9e9]">
@@ -220,9 +243,8 @@ const ServiceDetailPage = ({ service }: ServiceDetailPageProps) => {
                     <Link
                       key={serviceLink.slug}
                       to={`/services/${serviceLink.slug}`}
-                      className={`group flex items-center justify-between rounded-full px-5 py-4 text-[20px] leading-none transition-colors ${
-                        isActive(serviceLink.slug) ? "bg-[#2A62EB] text-white" : "bg-[#ece9e2] text-[#1e1e1e] hover:bg-[#e3dfd6]"
-                      }`}
+                      className={`group flex items-center justify-between rounded-full px-5 py-4 text-[20px] leading-none transition-colors ${isActive(serviceLink.slug) ? "bg-[#2A62EB] text-white" : "bg-[#ece9e2] text-[#1e1e1e] hover:bg-[#e3dfd6]"
+                        }`}
                     >
                       <span>{serviceLink.label}</span>
                       <ArrowRight className={`h-5 w-5 ${isActive(serviceLink.slug) ? "text-white" : "text-[#1e1e1e]"}`} />

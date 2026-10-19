@@ -74,6 +74,16 @@
   }
 }
 
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-50% - 10px));
+  }
+}
+
 @layer utilities {
   .text-gradient-brand {
     @apply bg-clip-text text-transparent;
