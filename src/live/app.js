@@ -41239,7 +41239,8 @@ const er = new NG(),
         }),
         c.jsx("div", {
           className:
-            "absolute top-[45%] -right-40 w-[600px] h-[600px] bg-[#3B82F6]/10 rounded-full blur-[180px] pointer-events-none",
+            "absolute -right-40 w-[600px] h-[600px] bg-[#3B82F6]/10 rounded-full blur-[180px] pointer-events-none",
+          style: { top: "45vh" },
         }),
         c.jsxs("div", {
           className:
@@ -41285,6 +41286,12 @@ const er = new NG(),
                 }),
               ],
             }),
+            !n && s &&
+              c.jsx("div", {
+                "aria-hidden": "true",
+                className: "mb-14 rounded-3xl bg-[#111728]/40 border border-white/5",
+                style: { height: window.innerWidth >= 1024 ? 452 : window.innerWidth >= 640 ? 723 : 643 },
+              }),
             n &&
               c.jsx(Qn.div, {
                 initial: { opacity: 0, y: 20 },

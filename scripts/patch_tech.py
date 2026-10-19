@@ -65,3 +65,33 @@ rep('async me() { const d = await __smdFetch("me"); __smdCsrf = d.csrf; return d
 
 # T8. Clean LinkedIn company URL (drop ?viewAsMember=true).
 s = s.replace('https://www.linkedin.com/company/skymatedigital/?viewAsMember=true', 'https://www.linkedin.com/company/skymatedigital/')
+
+# T9. Blog list CLS: decorative blur blob was positioned at top:45% of a container that grows when posts
+#     load (Lighthouse CLS 0.53). Anchor it to the viewport height instead (prebuilt CSS -> inline style).
+rep('''        c.jsx("div", {
+          className:
+            "absolute top-[45%] -right-40 w-[600px] h-[600px] bg-[#3B82F6]/10 rounded-full blur-[180px] pointer-events-none",
+        }),''', '''        c.jsx("div", {
+          className:
+            "absolute -right-40 w-[600px] h-[600px] bg-[#3B82F6]/10 rounded-full blur-[180px] pointer-events-none",
+          style: { top: "45vh" },
+        }),''')
+
+# T10. Blog list CLS: reserve the featured-post card's space while posts are loading.
+rep('''            n &&
+              c.jsx(Qn.div, {
+                initial: { opacity: 0, y: 20 },
+                animate: { opacity: 1, y: 0 },
+                transition: { duration: 0.6, delay: 0.3 },
+                className: "mb-14",''', '''            !n && s &&
+              c.jsx("div", {
+                "aria-hidden": "true",
+                className: "mb-14 rounded-3xl bg-[#111728]/40 border border-white/5",
+                style: { height: window.innerWidth >= 1024 ? 452 : window.innerWidth >= 640 ? 723 : 643 },
+              }),
+            n &&
+              c.jsx(Qn.div, {
+                initial: { opacity: 0, y: 20 },
+                animate: { opacity: 1, y: 0 },
+                transition: { duration: 0.6, delay: 0.3 },
+                className: "mb-14",''')
