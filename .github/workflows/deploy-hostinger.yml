@@ -1,0 +1,122 @@
+name: Deploy to Hostinger
+# Manual only for now: Actions tab -> "Deploy to Hostinger" -> Run workflow.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "backup = backup only; deploy = backup then deploy; restore = upload backup artifact from restore_run_id"
+        type: choice
+        options: [backup, deploy, restore]
+        default: backup
+      restore_run_id:
+        description: "Run id whose live-backup artifact to restore (mode=restore only)"
+        required: false
+concurrency: { group: hostinger-deploy, cancel-in-progress: false }
+jobs:
+  backup:
+    if: inputs.mode != 'restore'
+    runs-on: ubuntu-latest
+    env:
+      FTP_HOST: ${{ secrets.FTP_HOST }}
+      FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+      FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+    steps:
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+      - name: List FTP root and mirror public_html (incl. dotfiles)
+        run: |
+          mkdir -p backup
+          cat > lftprc <<'RC'
+          set ftp:ssl-allow yes
+          set ftp:ssl-force yes
+          set ftp:ssl-protect-data yes
+          set ssl:verify-certificate no
+          set ftp:list-options -a
+          set net:max-retries 3
+          set net:timeout 30
+          RC
+          echo "== FTP root listing =="
+          lftp -c "source lftprc; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" -p 21 $FTP_HOST; cls -la /" | tee backup-root-listing.txt
+          lftp -c "source lftprc; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" -p 21 $FTP_HOST; mirror --parallel=4 --no-perms public_html/ backup/public_html/"
+          cp backup-root-listing.txt backup/
+          n=$(find backup/public_html -type f | wc -l); echo "files: $n"; du -sh backup/public_html
+          ls -la backup/public_html | head -50
+          test "$n" -gt 5 || { echo "::error::Backup looks empty ($n files)"; exit 1; }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: live-backup-${{ github.run_id }}
+          path: backup/
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: error
+
+  restore:
+    if: inputs.mode == 'restore'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: live-backup-${{ inputs.restore_run_id }}
+          path: backup/
+          run-id: ${{ inputs.restore_run_id }}
+          github-token: ${{ github.token }}
+      - uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./backup/public_html/
+          server-dir: public_html/
+          state-name: .ftp-restore-sync-state.json
+          dangerous-clean-slate: false
+
+  deploy:
+    if: inputs.mode == 'deploy'
+    needs: backup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      - run: npm run build
+      - name: Check required files and secrets
+        env:
+          BLOG_ADMIN_BCRYPT: ${{ secrets.BLOG_ADMIN_BCRYPT }}
+          FTP_REMOTE_DIR: ${{ secrets.FTP_REMOTE_DIR || 'public_html/' }}
+        run: |
+          test -f dist/.htaccess && test -f dist/api/blog.php && test -f dist/api/render.php && test -f dist/api/pages.php && test -f dist/assets/.htaccess
+          case "$FTP_REMOTE_DIR" in */) ;; *) echo "::error::FTP_REMOTE_DIR must end with a slash (e.g. public_html/)"; exit 1;; esac
+          echo "Deploying to remote dir: $FTP_REMOTE_DIR (FTP root = /home/u986473291/domains/skymatedigital.com)"
+          case "$BLOG_ADMIN_BCRYPT" in '$2'*) ;; *) echo "::error::Secret BLOG_ADMIN_BCRYPT missing or not a bcrypt hash"; exit 1;; esac
+          for f in $(find dist/api -name '*.php'); do php -l "$f" >/dev/null; done
+      - name: Write server config (admin bcrypt hash; denied to the web by api/.htaccess)
+        env:
+          BLOG_ADMIN_BCRYPT: ${{ secrets.BLOG_ADMIN_BCRYPT }}
+          # Optional. Empty = auto: ../smd-blog-data if open_basedir allows it, else public_html/api/data (denied by .htaccess).
+          BLOG_DATA_DIR: ${{ vars.BLOG_DATA_DIR || secrets.BLOG_DATA_DIR || '' }}
+        run: |
+          php -r 'file_put_contents("dist/api/config.php", "<?php\n// Generated at deploy time. Do not commit.\nreturn " . var_export(["admin_user" => "admin", "admin_hash" => getenv("BLOG_ADMIN_BCRYPT"), "data_dir" => (string)getenv("BLOG_DATA_DIR"), "site_url" => "https://skymatedigital.com"], true) . ";\n");'
+          chmod 600 dist/api/config.php
+      - name: FTP deploy (never deletes remote files; never touches blog data/uploads)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./dist/
+          server-dir: ${{ secrets.FTP_REMOTE_DIR || 'public_html/' }}   # relative to FTP root (domains/skymatedigital.com)
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            api/data/**
+            api/config.local.php
+            uploads/blog/**
+            **/*.log
+            **/.DS_Store
+            smd-blog-data/**
