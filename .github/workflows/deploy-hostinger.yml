@@ -35,8 +35,8 @@ jobs:
           set net:timeout 30
           RC
           echo "== FTP root listing =="
-          lftp -c "source lftprc; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" -p 21 $FTP_HOST; cls -la /" | tee backup-root-listing.txt
-          lftp -c "source lftprc; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" -p 21 $FTP_HOST; mirror --parallel=4 --no-perms public_html/ backup/public_html/"
+          lftp -c "source lftprc; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" -p 21 $FTP_HOST; cls -la / /public_html/" | tee backup-root-listing.txt
+          lftp -c "source lftprc; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" -p 21 $FTP_HOST; mirror --parallel=4 --no-perms /public_html/ backup/public_html/"
           cp backup-root-listing.txt backup/
           n=$(find backup/public_html -type f | wc -l); echo "files: $n"; du -sh backup/public_html
           ls -la backup/public_html | head -50
@@ -67,7 +67,7 @@ jobs:
           protocol: ftps
           port: 21
           local-dir: ./backup/public_html/
-          server-dir: public_html/
+          server-dir: /public_html/
           state-name: .ftp-restore-sync-state.json
           dangerous-clean-slate: false
 
