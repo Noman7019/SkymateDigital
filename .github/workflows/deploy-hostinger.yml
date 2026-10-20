@@ -2,9 +2,78 @@ name: Deploy to Hostinger
 # Manual only for now: Actions tab -> "Deploy to Hostinger" -> Run workflow.
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: "backup = backup only; deploy = backup then deploy; restore = upload backup artifact from restore_run_id"
+        type: choice
+        options: [backup, deploy, restore]
+        default: backup
+      restore_run_id:
+        description: "Run id whose live-backup artifact to restore (mode=restore only)"
+        required: false
 concurrency: { group: hostinger-deploy, cancel-in-progress: false }
 jobs:
+  backup:
+    if: inputs.mode != 'restore'
+    runs-on: ubuntu-latest
+    env:
+      FTP_HOST: ${{ secrets.FTP_HOST }}
+      FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+      FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+    steps:
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+      - name: List FTP root and mirror public_html (incl. dotfiles)
+        run: |
+          mkdir -p backup
+          cat > lftprc <<'RC'
+          set ftp:ssl-allow yes
+          set ftp:ssl-force yes
+          set ftp:ssl-protect-data yes
+          set ssl:verify-certificate no
+          set ftp:list-options -a
+          set net:max-retries 3
+          set net:timeout 30
+          RC
+          echo "== FTP root listing =="
+          lftp -c "source lftprc; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" -p 21 $FTP_HOST; cls -la /" | tee backup-root-listing.txt
+          lftp -c "source lftprc; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" -p 21 $FTP_HOST; mirror --parallel=4 --no-perms public_html/ backup/public_html/"
+          cp backup-root-listing.txt backup/
+          n=$(find backup/public_html -type f | wc -l); echo "files: $n"; du -sh backup/public_html
+          ls -la backup/public_html | head -50
+          test "$n" -gt 5 || { echo "::error::Backup looks empty ($n files)"; exit 1; }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: live-backup-${{ github.run_id }}
+          path: backup/
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: error
+
+  restore:
+    if: inputs.mode == 'restore'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: live-backup-${{ inputs.restore_run_id }}
+          path: backup/
+          run-id: ${{ inputs.restore_run_id }}
+          github-token: ${{ github.token }}
+      - uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./backup/public_html/
+          server-dir: public_html/
+          state-name: .ftp-restore-sync-state.json
+          dangerous-clean-slate: false
+
   deploy:
+    if: inputs.mode == 'deploy'
+    needs: backup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
