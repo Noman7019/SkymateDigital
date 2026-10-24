@@ -31914,7 +31914,8 @@ function C1(t = {}, e = []) {
 }
 C1.globalOptions = void 0;
 const qW = [
-    { name: "Nouman Sheikh", role: "CEO & Founder", image: nW },
+    { name: "Furqan Ahmed", role: "CEO & Co-founder", image: "/assets/furqan-ahmed.webp" },
+    { name: "Noman Rashid", role: "Social Media Manager", image: nW },
     { name: "Hasnain Ahmed", role: "Business Manager", image: sW },
     { name: "Tayaba Jadoon", role: "Social media Specialist", image: uW },
     { name: "Fiza Naeem", role: "Copy Writer Specialist", image: iW },
@@ -40968,7 +40969,7 @@ const kG = "/assets/automation-Dz_G8EW7.jpg",
       ],
       author: {
         name: "Noman Rashid",
-        role: "Founder & CEO, Sky Mate Digital",
+        role: "Social Media Manager",
         avatar:
           "/assets/author-nr.svg",
       },
@@ -41009,7 +41010,7 @@ const kG = "/assets/automation-Dz_G8EW7.jpg",
       tags: ["AI", "Automation", "Workflows", "Productivity", "Make.com"],
       author: {
         name: "Noman Rashid",
-        role: "Founder & CEO, Sky Mate Digital",
+        role: "Social Media Manager",
         avatar:
           "/assets/author-nr.svg",
       },
@@ -41046,7 +41047,7 @@ const kG = "/assets/automation-Dz_G8EW7.jpg",
       tags: ["SEO", "Content Marketing", "Conversion Rate", "Copywriting"],
       author: {
         name: "Noman Rashid",
-        role: "Founder & CEO, Sky Mate Digital",
+        role: "Social Media Manager",
         avatar:
           "/assets/author-nr.svg",
       },
@@ -41084,7 +41085,7 @@ const kG = "/assets/automation-Dz_G8EW7.jpg",
       tags: ["Paid Ads", "Growth", "Meta Ads", "Google Ads", "Analytics"],
       author: {
         name: "Noman Rashid",
-        role: "Founder & CEO, Sky Mate Digital",
+        role: "Social Media Manager",
         avatar:
           "/assets/author-nr.svg",
       },
@@ -41113,7 +41114,7 @@ const kG = "/assets/automation-Dz_G8EW7.jpg",
       tags: ["UI/UX", "Product Design", "Figma", "Mobile App", "Frontend"],
       author: {
         name: "Noman Rashid",
-        role: "Founder & CEO, Sky Mate Digital",
+        role: "Social Media Manager",
         avatar:
           "/assets/author-nr.svg",
       },
@@ -41152,7 +41153,7 @@ const kG = "/assets/automation-Dz_G8EW7.jpg",
       ],
       author: {
         name: "Noman Rashid",
-        role: "Founder & CEO, Sky Mate Digital",
+        role: "Social Media Manager",
         avatar:
           "/assets/author-nr.svg",
       },
