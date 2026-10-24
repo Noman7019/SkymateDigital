@@ -67179,7 +67179,7 @@ const wse = ({ content: t, onChange: e }) => {
       [E, C] = S.useState("<p>Write your article content here...</p>"),
       [N, A] = S.useState(""),
       [M, I] = S.useState("Noman Rashid"),
-      [L, _] = S.useState("Founder & CEO, Sky Mate Digital"),
+      [L, _] = S.useState("Social Media Manager"),
       [j, Y] = S.useState(
         "/assets/author-nr.svg",
       ),
